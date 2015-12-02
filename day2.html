@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Day 2: I Was Told There Would Be No Math</title>
+	<script type="text/javascript">
+		function getPresentMaterialAmounts(inputs) {
+			var response = {
+				paper: 0,
+				ribbon: 0
+			};
+			
+			for (var i = 0; i < inputs.length; ++i) {
+				var str = inputs[i];
+				
+				var dimensions = str.split("x");
+				var l = parseInt(dimensions[0]);
+				var w = parseInt(dimensions[1]);
+				var h = parseInt(dimensions[2]);
+				
+				var lw = l * w;
+				var wh = w * h;
+				var lh = l * h;
+				
+				var shortest = lw;
+				if (wh < shortest) shortest = wh;
+				if (lh < shortest) shortest = lh;
+				
+				var longest = l;
+				if (w > longest) longest = w;
+				if (h > longest) longest = h;
+				
+				response.paper += shortest + 2 * lw + 2 * wh + 2 * lh;
+				response.ribbon += 2 * l + 2 * w + 2 * h + l * w * h - 2 * longest;
+			}
+			
+			return response;
+		}
+		
+		function generateOutput() {
+			var inputs = document.getElementById("input").value.split("\n");
+			
+			var response = getPresentMaterialAmounts(inputs);
+			document.getElementById("output1").value = response.paper;
+			document.getElementById("output2").value = response.ribbon;
+		}
+	</script>
+</head>
+<body>
+	Input (make sure each package is on a separate line): <br />
+	<textarea id="input" style="width: 400px; height: 150px;"></textarea><br />
+	
+	<button onClick="generateOutput();">Generate Output</button>
+	
+	<br /><br />
+	
+	Wrapping paper: <input type="text" id="output1" />
+	Ribbon: <input type="text" id="output2" />
+</body>
+</html>
