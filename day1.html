@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Day 1: Not Quite Lisp</title>
+	<script type="text/javascript">
+		function getFloor(position, str) {
+			var response = {
+				floor: 0,
+				enterPos: null
+			};
+			
+			var currentPosition = 1;
+			
+			for (var i = 0; i < str.length; ++i) {
+				if (str[i] == "(") ++response.floor;
+				if (str[i] == ")") --response.floor;
+				if ((response.floor == position) && (response.enterPos == null))
+					response.enterPos = currentPosition;
+				++currentPosition;
+			}
+			
+			return response;
+		}
+		
+		function generateOutput() {
+			var input = document.getElementById("input").value;
+			var position = parseInt(document.getElementById("position").value) || 0;
+			
+			var response = getFloor(position, input);
+			document.getElementById("output1").value = response.floor;
+			document.getElementById("output2").value = response.enterPos || "Never reached"
+		}
+	</script>
+</head>
+<body>
+	Input: <input type="text" id="input" />
+	Position: <input type="text" id="position" />
+	<button onClick="generateOutput();">Generate Output</button>
+	
+	<br /><br />
+	
+	Final floor: <input type="text" id="output1" />
+	Position reached at character: <input type="text" id="output2" />
+</body>
+</html>
