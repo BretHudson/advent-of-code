@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Day 3: Perfectly Spherical Houses in a Vacuum</title>
+	<script type="text/javascript">
+		function incrementGrid(grid, pos) {
+			if (grid[pos] === undefined) {
+				grid[pos] = 1;
+				return true;
+			}
+			
+			++grid[pos];
+			return false;
+		}
+		
+		function deliverGifts(str) {
+			var response = {
+				year1: 0,
+				year2: 0
+			};
+			
+			// Year 1 variables
+			var grid1 = new Array();
+			var houses1 = 1;
+			
+			// Year 2 variables
+			var grid2 = new Array();
+			var houses2 = 1;
+			
+			// Characters
+			var santa1 = { x: 0, y: 0 };
+			var santa2 = { x: 0, y: 0 };
+			var robotsanta = { x: 0, y: 0 };
+			var pos = "0,0";
+			grid1[pos] = 1;
+			grid2[pos] = 1;
+			
+			var currentCharacter;
+			for (var i = 0; i < str.length; ++i) {
+				currentCharacter = (i % 2 == 0) ? santa2 : robotsanta;
+				
+				switch (str[i]) {
+					case 'v':
+						++santa1.y;
+						++currentCharacter.y;
+						break;
+					case '^':
+						--santa1.y;
+						--currentCharacter.y;
+						break;
+					case '<':
+						--santa1.x;
+						--currentCharacter.x;
+						break;
+					case '>':
+						++santa1.x;
+						++currentCharacter.x;
+						break;
+				}
+				
+				pos = santa1.x + "," + santa1.y;
+				if (incrementGrid(grid1, pos))
+					++houses1;
+				
+				pos = currentCharacter.x + "," + currentCharacter.y;
+				if (incrementGrid(grid2, pos))
+					++houses2;
+			}
+			
+			response.year1 = houses1;
+			response.year2 = houses2;
+			
+			return response;
+		}
+		
+		function generateOutput() {
+			var response = deliverGifts(document.getElementById("input").value);
+			document.getElementById("year1").value = response.year1;
+			document.getElementById("year2").value = response.year2;
+		}
+	</script>
+</head>
+<body>
+	Input:<br />
+	<textarea id="input" style="width: 400px; height: 150px;"></textarea><br />
+	<button onClick="generateOutput();">Generate Output</button>
+	
+	<br /><br />
+	
+	Year 1: <input type="text" id="year1" /><br />
+	Year 2: <input type="text" id="year2" /><br />
+</body>
+</html>
