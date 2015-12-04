@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Title</title>
+	<script type="text/javascript" src="libraries/md5.js"></script>
+	<script type="text/javascript">
+		function getShortestNumber(input, zeroes) {
+			var answer = "";
+			var comparison = "";
+			for (var z = 0; z < zeroes; ++z) {
+				comparison += "0";
+			}
+			
+			for (var i = 0; i < 999999999; ++i) {
+				if (i % 100000 == 0) {
+					console.log(i);
+				}
+				
+				answer = md5(input + String(i));
+				if (answer.substr(0, zeroes) == comparison) {
+					return i;
+				}
+			}
+			
+			return "Greater than 999999999, whelp";
+		}
+		
+		function generateOutput() {
+			var input = document.getElementById("input").value;
+			
+			document.getElementById("fivezeros").value = "Loading...";
+			setTimeout(function() {
+				response = getShortestNumber(input, 5);
+				document.getElementById("fivezeros").value = response;
+			}, 10);
+			
+			document.getElementById("sixzeroes").value = "Loading...";
+			setTimeout(function() {
+				response = getShortestNumber(input, 6);
+				document.getElementById("sixzeroes").value = response;
+			}, 10);
+		}
+	</script>
+</head>
+<body>
+	Input: <input type="text" id="input" />
+	<button onClick="generateOutput();">Generate Output</button>
+	
+	<br /><br />
+	
+	5 Zeroes: <input type="text" id="fivezeros" /><br />
+	6 Zeroes: <input type="text" id="sixzeroes" /><br />
+</body>
+</html>
