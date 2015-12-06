@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Day 5: Doesn't He Have Intern-Elves For This?</title>
+	<script type="text/javascript">
+		function validateStringRules1(str) {
+			// Check to make sure only has 3 of the following characters: aeiou
+			var vowels = str.match(/[aeiou]/g);
+			if ((vowels == null) || (vowels.length < 3))
+				return false;
+			
+			// Make sure at least one letter repeats
+			if (!(/(.)\1/).test(str)) return false;
+			
+			// Does not contain any of these strings
+			var exceptions = str.match(/ab|cd|pq|xy/g);
+			if ((exceptions != null) && (exceptions.length >= 1))
+				return false;
+			
+			// Passed all tests
+			return true;
+		}
+		
+		function validateStringRules2(str) {
+			// Has a pair that appears twice, but doesn't overlap
+			if (str.match(/(.{2}).*\1/g) == null) return false;
+			
+			// Has a character that appears again after another (ie: xyx, ele, wow)
+			if (!(/(.)(.)\1/g).test(str)) return false;
+			
+			return true;
+		}
+		
+		function generateOutput() {
+			var inputs = document.getElementById("input").value.split("\n");
+			
+			var validStringsRules1 = 0;
+			var validStringsRules2 = 0;
+			for (var i = 0; i < inputs.length; ++i) {
+				if (validateStringRules1(inputs[i]))
+					++validStringsRules1;
+				if (validateStringRules2(inputs[i]))
+					++validStringsRules2;
+			}
+			
+			document.getElementById("rules1").value = validStringsRules1;
+			document.getElementById("rules2").value = validStringsRules2;
+		}
+	</script>
+</head>
+<body>
+	Input (make sure each string is on a separate line): <br />
+	<textarea id="input" style="width: 400px; height: 150px;"></textarea><br />
+	<button onClick="generateOutput();">Generate Output</button>
+	
+	<br /><br />
+	
+	Rule set 1: <input type="text" id="rules1" /><br />
+	Rule set 2: <input type="text" id="rules2" /><br />
+</body>
+</html>
