@@ -2,53 +2,82 @@
 <html>
 <head>
 	<title>Day 4: The Ideal Stocking Stuffer</title>
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+	<link href="https://fonts.googleapis.com/css?family=Exo+2:400,700" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="css/day.css" />
 	<script type="text/javascript" src="libraries/md5.js"></script>
 	<script type="text/javascript">
-		function getShortestNumber(input, zeroes) {
-			var answer = "";
-			var comparison = "";
-			for (var z = 0; z < zeroes; ++z) {
-				comparison += "0";
-			}
+		function updateOutput(str) {
+			document.getElementById('output1').value = str;
+			document.getElementById('output2').value = str;
+		}
+		
+		var timeout;
+		
+		function computeShortestNumber(input, zeroes, output, iter, callback) {
+			var answer = '';
+			var answerIndex = 0;
 			
-			for (var i = 0; i < 999999999; ++i) {
-				if (i % 100000 == 0) {
-					console.log(i);
-				}
-				
+			for (var i = 32768 * iter; i < 32768 * (iter + 1); ++i) {
 				answer = md5(input + String(i));
-				if (answer.substr(0, zeroes) == comparison) {
-					return i;
+				if (answer.substr(0, zeroes.length) === zeroes) {
+					answerIndex = i;
 				}
 			}
 			
-			return "Greater than 999999999, whelp";
+			var display = 'LOADING...'.substr(0, (++iter / 2) % 11);
+			
+			if (answerIndex == 0) {
+				timeout = setTimeout(function() {
+					computeShortestNumber(input, zeroes, output, iter, callback);
+				}, 3);
+			} else {
+				display = answerIndex;
+				
+				if (callback != null) {
+					callback();
+				}
+			}
+			
+			document.getElementById(output).value = display;
+		}
+		
+		function getShortestNumber(input, zeroes, output, callback) {
+			var comparison = '';
+			for (var z = 0; z < zeroes; ++z) {
+				comparison += '0';
+			}
+			
+			computeShortestNumber(input, comparison, output, 0, callback);
 		}
 		
 		function generateOutput() {
-			var input = document.getElementById("input").value;
+			var puzzleInput = document.getElementById('puzzle-input').value;
 			
-			document.getElementById("fivezeros").value = "Loading...";
-			setTimeout(function() {
-				response = getShortestNumber(input, 5);
-				document.getElementById("fivezeros").value = response;
-			}, 10);
+			updateOutput('');
 			
-			document.getElementById("sixzeroes").value = "Loading...";
-			setTimeout(function() {
-				response = getShortestNumber(input, 6);
-				document.getElementById("sixzeroes").value = response;
-			}, 10);
+			clearTimeout(timeout);
+			
+			getShortestNumber(puzzleInput, 5, 'output1', function() {
+				getShortestNumber(puzzleInput, 6, 'output2', null);
+			});
 		}
 	</script>
 </head>
 <body>
-	Input: <input type="text" id="input" />
+	<h2>Day 4</h2>
+	
+	<label for="puzzle-input">Puzzle Input:</label>
+	<input type="text" id="puzzle-input" />
+	
 	<button onClick="generateOutput();">Generate Output</button>
 	
-	<br /><br />
+	<label style="font-style: italic; margin-bottom: 28px;">This one takes a minute...</label>
 	
-	5 Zeroes: <input type="text" id="fivezeros" /><br />
-	6 Zeroes: <input type="text" id="sixzeroes" /><br />
+	<label for="output1">5 Zeroes:</label>
+	<input type="text" id="output1" />
+	
+	<label for="output2">6 Zeroes:</label>
+	<input type="text" id="output2" />
 </body>
 </html>
