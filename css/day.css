@@ -102,15 +102,22 @@ textarea {
 	overflow: hidden;
 }
 
-@media (max-size: 767px) {
+@media (max-width: 767px) {
 	#solution {
-		width: 50%;
+		width: 100%;
 		margin: 0px auto;
-		background-color: red;
 	}
-	
+}
+
+@media (max-width: 520px) {
 	textarea {
-		width: inherit;
+		width: 84% !important;
+	}
+}
+
+@media (max-width: 290px) {
+	input[type=text] {
+		max-width: 80%;
 	}
 }
 
