@@ -2,6 +2,9 @@
 <html>
 <head>
 	<title>Day 3: Perfectly Spherical Houses in a Vacuum</title>
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+	<link href="https://fonts.googleapis.com/css?family=Exo+2:400,700" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="css/day.css" />
 	<script type="text/javascript">
 		function incrementGrid(grid, pos) {
 			if (grid[pos] === undefined) {
@@ -31,7 +34,7 @@
 			var santa1 = { x: 0, y: 0 };
 			var santa2 = { x: 0, y: 0 };
 			var robotsanta = { x: 0, y: 0 };
-			var pos = "0,0";
+			var pos = '0,0';
 			grid1[pos] = 1;
 			grid2[pos] = 1;
 			
@@ -58,11 +61,11 @@
 						break;
 				}
 				
-				pos = santa1.x + "," + santa1.y;
+				pos = santa1.x + ',' + santa1.y;
 				if (incrementGrid(grid1, pos))
 					++houses1;
 				
-				pos = currentCharacter.x + "," + currentCharacter.y;
+				pos = currentCharacter.x + ',' + currentCharacter.y;
 				if (incrementGrid(grid2, pos))
 					++houses2;
 			}
@@ -74,20 +77,24 @@
 		}
 		
 		function generateOutput() {
-			var response = deliverGifts(document.getElementById("input").value);
-			document.getElementById("year1").value = response.year1;
-			document.getElementById("year2").value = response.year2;
+			var response = deliverGifts(document.getElementById('puzzle-input').value);
+			document.getElementById('output1').value = response.year1;
+			document.getElementById('output2').value = response.year2;
 		}
 	</script>
 </head>
 <body>
-	Input:<br />
-	<textarea id="input" style="width: 400px; height: 150px;"></textarea><br />
+	<h2>Day 3</h2>
+	
+	<label>Puzzle Input:</label>
+	<textarea id="puzzle-input" style="width: 400px; height: 150px;"></textarea>
+	
 	<button onClick="generateOutput();">Generate Output</button>
 	
-	<br /><br />
+	<label for="output1">Year 1:</label>
+	<input type="text" id="output1" />
 	
-	Year 1: <input type="text" id="year1" /><br />
-	Year 2: <input type="text" id="year2" /><br />
+	<label for="output2">Year 2:</label>
+	<input type="text" id="output2" />
 </body>
 </html>
