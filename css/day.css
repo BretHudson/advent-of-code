@@ -102,6 +102,18 @@ textarea {
 	overflow: hidden;
 }
 
+@media (max-size: 767px) {
+	#solution {
+		width: 50%;
+		margin: 0px auto;
+		background-color: red;
+	}
+	
+	textarea {
+		width: inherit;
+	}
+}
+
 input[type=text] + label {
 	margin-top: 25px;
 }

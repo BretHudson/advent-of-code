@@ -6,32 +6,26 @@
 	<link href="https://fonts.googleapis.com/css?family=Exo+2:400,700" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="css/styles.css">
 	<link rel="stylesheet" type="text/css" href="css/grid.css">
+	<!--
+		TODO(bret):
+			- Calculate height of iframe
+			- Fade in effect for each day
+			- Maybe create iframes w/ JS?
+			- JS formatting for each day page
+			- View: github.com/BretHudson/AdventOfCode2015/blob/master/day5.html
+	-->
+	<script type="text/javascript" src="js/main.js"></script>
 </head>
 <body>
 	<h1>Advent of Code 2015</h1>
 	<h2>Solutions by <a target="_BLANK" href="http://www.brethudson.com">Bret Hudson</a></h2>
 	<div class="container">
-		<!-- https://github.com/BretHudson/AdventOfCode2015/blob/master/day5.html -->
-		<div class="row">
-			<div class="day col-xs-12 col-md-6 col-lg-4">
-				<iframe src="day1.html" width="100%" height="720px;"></iframe>
-			</div>
-			<div class="day col-xs-12 col-md-6 col-lg-4">
-				<iframe src="day2.html" width="100%" height="720px;"></iframe>
-			</div>
-			<div class="day col-xs-12 col-md-6 col-lg-4">
-				<iframe src="day3.html" width="100%" height="720px;"></iframe>
-			</div>
-			
-			<div class="day col-xs-12 col-md-6 col-lg-4">
-				<iframe src="day4.html" width="100%" height="720px;"></iframe>
-			</div>
-			<div class="day col-xs-12 col-md-6 col-lg-4">
-				<iframe src="day5.html" width="100%" height="720px;"></iframe>
-			</div>
-			<div class="day col-xs-12 col-md-6 col-lg-4">
-				<!--<iframe src="day6.html" width="100%" height="720px;"></iframe>-->
-			</div>
+		<div id="day-container" class="row">
+			<script type="text/javascript">
+				for (var day = 1; day <= 5; ++day) {
+					new SolutionFrame(day);
+				}
+			</script>
 		</div>
 	</div>
 </body>

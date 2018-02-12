@@ -5,6 +5,7 @@
 	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
 	<link href="https://fonts.googleapis.com/css?family=Exo+2:400,700" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="css/day.css" />
+	<script type="text/javascript" src="js/main.js"></script>
 	<script type="text/javascript">
 		function validateStringRules1(str) {
 			// Check to make sure only has 3 of the following characters: aeiou
@@ -52,17 +53,21 @@
 	</script>
 </head>
 <body>
-	<h2>Day 5</h2>
+	<div id="solution">
+		<label>Puzzle Input (make sure each string is on a separate line):</label>
+		<textarea id="puzzle-input" style="width: 400px; height: 150px;"></textarea>
+		
+		<button onClick="generateOutput();">Generate Output</button>	
+		
+		<label for="output1">Rule set 1:</label>
+		<input type="text" id="output1" />
+		
+		<label for="output2">Rule set 2:</label>
+		<input type="text" id="output2" />
+	</div>
 	
-	<label>Puzzle Input (make sure each string is on a separate line):</label>
-	<textarea id="puzzle-input" style="width: 400px; height: 150px;"></textarea>
-	
-	<button onClick="generateOutput();">Generate Output</button>	
-	
-	<label for="output1">Rule set 1:</label>
-	<input type="text" id="output1" />
-	
-	<label for="output2">Rule set 2:</label>
-	<input type="text" id="output2" />
+	<script type="text/javascript">
+		new Solution(5, 'solution');
+	</script>
 </body>
 </html>

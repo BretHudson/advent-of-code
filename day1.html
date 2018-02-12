@@ -5,6 +5,7 @@
 	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
 	<link href="https://fonts.googleapis.com/css?family=Exo+2:400,700" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="css/day.css" />
+	<script type="text/javascript" src="js/main.js"></script>
 	<script type="text/javascript">
 		function getFloor(str) {
 			var response = {
@@ -35,19 +36,21 @@
 	</script>
 </head>
 <body>
-	<h2>Day 1</h2>
+	<div id="solution">
+		<label for="puzzle-input">Puzzle Input:</label>
+		<input type="text" id="puzzle-input" />
+		
+		<button onClick="generateOutput();">Generate Output</button>
+		
+		<label for="output1">Final floor:</label>
+		<input type="text" id="output1" />
+		
+		<label for="output2">Position reached at character:</label>
+		<input type="text" id="output2" />
+	</div>
 	
-	<label for="puzzle-input">Puzzle Input:</label>
-	<input type="text" id="puzzle-input" />
-	
-	<button onClick="generateOutput();">Generate Output</button>
-	
-	<label for="output1">Final floor:</label>
-	<input type="text" id="output1" />
-	
-	<label for="output2">Position reached at character:</label>
-	<input type="text" id="output2" />
-	
-	<h4><a href="#">View Source</a></h4>
+	<script type="text/javascript">
+		new Solution(1, 'solution');
+	</script>
 </body>
 </html>
