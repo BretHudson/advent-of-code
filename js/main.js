@@ -27,7 +27,7 @@ SolutionFrame.prototype.addToDOM = function() {
 
 Solution = function(id, div) {
 	var h2 = document.createElement('h2');
-	h2.innerText = 'Day ' + id;
+	h2.innerHTML = '<a target="_blank" href="day' + id + '.html">Day ' + id + '</a>';
 	
 	var source = document.createElement('a');
 	source.innerText = 'View Source';
