@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Day 8: Matchsticks</title>
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+	<link href="https://fonts.googleapis.com/css?family=Exo+2:400,700" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="css/day.css" />
+	<script type="text/javascript" src="js/main.js"></script>
+	<script type="text/javascript">
+		function computeDifference(input) {
+			var result = {
+				literalExtraCount: 0,
+				newExtraCount: 0
+			};
+			
+			input.split('\n').forEach(function(str, i) {
+				var regex = /\\(\\)|\\(\")|\\(x)[A-Fa-f0-9]{1,2}|(\")/g;
+				result.literalExtraCount += str.length - str.replace(regex, '$1$2$3').length;
+				
+				// From instructions: "you should now encode each code representation as a new string"
+				// So we make sure we do that!
+				var newStr = '"' + str.replace(/(\\|\")/g, '\\$1') + '"';
+				result.newExtraCount += newStr.length - str.length;
+			});
+			
+			return result;
+		}
+		
+		function generateOutput() {
+			var input = document.getElementById('puzzle-input').value;
+			
+			var result = computeDifference(input);
+			
+			document.getElementById('output1').value = result.literalExtraCount;
+			document.getElementById('output2').value = result.newExtraCount;
+		}
+	</script>
+</head>
+<body>
+	<div id="solution">
+		<label for="puzzle-input">Puzzle Input:</label>
+		<textarea id="puzzle-input" style="width: 400px; height: 150px;"></textarea>
+		
+		<button onClick="generateOutput();">Generate Output</button>
+		
+		<label for="output1">String Literals Extra Char Count:</label>
+		<input type="text" id="output1" />
+		
+		<label for="output2">New Strings Extra Char Count:</label>
+		<input type="text" id="output2" />
+	</div>
+	
+	<script type="text/javascript">
+		new Solution(8, 'solution');
+	</script>
+</body>
+</html>
