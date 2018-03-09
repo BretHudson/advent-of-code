@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Day 10: Subtitle</title>
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+	<link href="https://fonts.googleapis.com/css?family=Exo+2:400,700" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="css/day.css" />
+	<script type="text/javascript" src="js/main.js"></script>
+	<script type="text/javascript">
+		function lookAndSay(input) {
+			var result = '';
+			
+			// Make sure we've a string
+			input = input.toString();
+			
+			var curDigit = null;
+			var digitCount = 0;
+			for (var i = 0, len = input.length; i < len; ++i) {
+				if ((curDigit !== null) && (curDigit != input[i])) {
+					// Output
+					result += digitCount.toString() + curDigit;
+					digitCount = 0;
+				}
+				curDigit = input[i];
+				++digitCount;
+			}
+			if (digitCount > 0) {
+				result += digitCount + curDigit;
+			}
+			
+			return result;
+		}
+		
+		function generateOutput() {
+			var puzzleInput = document.getElementById('puzzle-input').value;
+			
+			var result = puzzleInput;
+			
+			// Run it 40 times
+			for (var i = 0; i < 40; ++i) {
+				result = lookAndSay(result);
+			}
+			
+			document.getElementById('output1').value = result.length;
+			
+			// Run it 10 more times for a total of 50
+			for (var i = 0; i < 10; ++i) {
+				result = lookAndSay(result);
+			}
+			
+			document.getElementById('output2').value = result.length;
+		}
+	</script>
+</head>
+<body>
+	<div id="solution">
+		<label for="puzzle-input">Puzzle Input:</label>
+		<input type="text" id="puzzle-input" />
+		
+		<button onClick="generateOutput();">Generate Output</button>
+		
+		<label for="output1">40 Runs:</label>
+		<input type="text" id="output1" />
+		
+		<label for="output2">50 Runs:</label>
+		<input type="text" id="output2" />
+	</div>
+	
+	<script type="text/javascript">
+		new Solution(10, 'solution');
+	</script>
+</body>
+</html>
