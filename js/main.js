@@ -4,7 +4,7 @@ SolutionFrame = function(id) {
 	var iframe = document.createElement('iframe');
 	iframe.id = 'day-' + this.id;
 	iframe.width = '100%';
-	iframe.src = 'day' + this.id + '.html';
+	iframe.src = 'day' + this.id + '';
 	iframe.onload = function(e) {
 		var iframe = e.path[0];
 		iframe.height = 60 + iframe.contentWindow.document.body.scrollHeight;
@@ -27,7 +27,7 @@ SolutionFrame.prototype.addToDOM = function() {
 
 Solution = function(id, div) {
 	var h2 = document.createElement('h2');
-	h2.innerHTML = '<a target="_blank" href="day' + id + '.html">Day ' + id + '</a>';
+	h2.innerHTML = '<a target="_blank" href="day' + id + '">Day ' + id + '</a>';
 	
 	var source = document.createElement('a');
 	source.innerText = 'View Source';
