@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Day 11: Corporate Policy</title>
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+	<link href="https://fonts.googleapis.com/css?family=Exo+2:400,700" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="css/day.css" />
+	<script type="text/javascript" src="js/main.js"></script>
+	<script type="text/javascript">
+		var alpha = 'abcdefghijklmnopqrstuvwxyz';
+		
+		function checkValidity(password) {
+			var result = {
+				meets: [],
+				fails: [],
+			};
+			
+			// Rule 1
+			var rule1Passed = false;
+			for (var i = 0, n = password.length - 2; i < n; ++i) {
+				if (alpha.indexOf(password.substr(i, 3)) !== -1) {
+					rule1Passed = true;
+					result.meets.push(1);
+					break;
+				}
+			}
+			if (rule1Passed === false)
+				result.fails.push(1);
+			
+			// Rule 2
+			if (password.match(/[iol]/g) === null)
+				result.meets.push(2);
+			else
+				result.fails.push(2);
+			
+			// Rule 3
+			var regex = /([a-z])\1[a-z]*(?!\1)([a-z])\2/g;
+			if (regex.exec(password) !== null)
+				result.meets.push(3);
+			else
+				result.fails.push(3);
+			
+			// Set valid
+			result.valid = (result.fails.length === 0);
+			
+			return result;
+		}
+		
+		function getNewPassword(password) {
+			var np = password; // New password
+			
+			var iter = 0;
+			while (true) {
+				// Move everything left
+				for (var i = np.length - 1; i >= 0; --i) {
+					var nextIndex = alpha.indexOf(np[i]) + 1;
+					if (nextIndex === 26) nextIndex = 0;
+					np = np.substr(0, i) + alpha[nextIndex] + np.substr(i + 1);
+					
+					if (nextIndex !== 0) break;
+				}
+				
+				// We have hit "z" limit
+				if (/^(z*)$/g.exec(np) !== null) break;
+				
+				// If we've found the valid password, time to break out!
+				if (checkValidity(np).valid) break;
+			}
+			
+			return np;
+		}
+		
+		function generateOutput() {
+			var puzzleInput = document.getElementById('puzzle-input').value;
+			
+			var newPass = getNewPassword(puzzleInput);
+			var nextNewPass = getNewPassword(newPass);
+			
+			document.getElementById('output1').value = newPass;
+			document.getElementById('output2').value = nextNewPass;
+		}
+	</script>
+</head>
+<body>
+	<div id="solution">
+		<label for="puzzle-input">Puzzle Input:</label>
+		<input type="text" id="puzzle-input" />
+		
+		<button onClick="generateOutput();">Generate Output</button>
+		
+		<label for="output1">New Password:</label>
+		<input type="text" id="output1" />
+		
+		<label for="output2">Next New Password:</label>
+		<input type="text" id="output2" />
+	</div>
+	
+	<script type="text/javascript">
+		new Solution(11, 'solution');
+	</script>
+</body>
+</html>
