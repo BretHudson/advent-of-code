@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Day 12: JSAbacusFramework.io</title>
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+	<link href="https://fonts.googleapis.com/css?family=Exo+2:400,700" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="css/day.css" />
+	<script type="text/javascript" src="js/main.js"></script>
+	<script type="text/javascript">
+		function sumNumbersInObject(obj, handleRed) {
+			if ((handleRed === true) && (typeof(obj) === 'object') && (Array.isArray(obj) === false)) {
+				for (var key in obj) {
+					if (obj[key] === 'red')
+						return 0;
+				}
+			}
+			
+			switch (typeof(obj)) {
+				case 'object': {
+					var sum = 0;
+					for (var key in obj)
+						sum += sumNumbersInObject(obj[key], handleRed);
+					return sum;
+				}
+				
+				case 'string': {
+					var val = parseInt(obj, 10);
+					if (isNaN(val)) return 0;
+					return val;
+				}
+				
+				case 'number':
+					return obj;
+			}
+		}
+		
+		function generateOutput() {
+			var puzzleInput = document.getElementById('puzzle-input').value;
+			puzzleInput = JSON.parse(puzzleInput);
+			
+			var solution1 = sumNumbersInObject(puzzleInput, false);
+			var solution2 = sumNumbersInObject(puzzleInput, true);
+			
+			document.getElementById('output1').value = solution1;
+			document.getElementById('output2').value = solution2;
+		}
+	</script>
+</head>
+<body>
+	<div id="solution">
+		<label for="puzzle-input">Puzzle Input:</label>
+		<textarea id="puzzle-input" style="width: 400px; height: 150px;"></textarea>
+		
+		<button onClick="generateOutput();">Generate Output</button>
+		
+		<label for="output1">Sum of all numbers:</label>
+		<input type="text" id="output1" />
+		
+		<label for="output2">Sum, ignoring red:</label>
+		<input type="text" id="output2" />
+	</div>
+	
+	<script type="text/javascript">
+		new Solution(12, 'solution');
+	</script>
+</body>
+</html>
