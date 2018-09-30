@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Day 13: Knights of the Dinner Table</title>
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+	<link href="https://fonts.googleapis.com/css?family=Exo+2:400,700" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="css/day.css" />
+	<script type="text/javascript" src="js/main.js"></script>
+	<script type="text/javascript">
+		function addRelation(relations, personA, happiness, personB) {
+			if (relations[personA] === undefined) {
+				relations[personA] = [];
+			}
+			relations[personA][personB] = happiness;
+		}
+		
+		function parseRelations(input) {
+			var lines = input.split('\n');
+			
+			var relations = [];
+			for (var i = 0, n = lines.length; i < n; ++i) {
+				var regex = /(\w+) would (\w+) (\d+) happiness units by sitting next to (\w+)./g;
+				var match = regex.exec(lines[i]);
+				
+				var happiness = parseInt(match[3]);
+				if (match[2] === 'lose')
+					happiness = -happiness;
+				
+				addRelation(relations, match[1], happiness, match[4]);
+			}
+			return relations;
+		}
+		
+		function parseFolks(relations) {
+			let folks = [];
+			for (var k in relations)
+				folks.push(k);
+			return folks;
+		}
+		
+		function permutate(processed, remaining) {
+			var permutations = [];
+			
+			for (var i = 0, n = remaining.length; i < n; ++i) {
+				var newProcessed = processed.slice();
+				var newRemaining = remaining.slice();
+				newProcessed.push(newRemaining.splice(i, 1)[0]);
+				if (newRemaining.length > 0) {
+					results = permutate(newProcessed, newRemaining);
+					permutations = permutations.concat(results);
+				} else
+					permutations.push(newProcessed);
+			}
+			
+			return permutations;
+		}
+		
+		function createAllPermutations(folks) {
+			let permutations = permutate([], folks);
+			return permutations;
+		}
+		
+		function computeHappiness(relations, folks) {
+			let permutations = createAllPermutations(folks);
+			
+			var maxHappiness = Number.MIN_SAFE_INTEGER;
+			
+			var numFolks = folks.length;
+			for (var i = 0, n = permutations.length; i < n; ++i) {
+				var p = permutations[i];
+				
+				var totalHappiness = 0;
+				for (var f = 0; f < numFolks; ++f) {
+					var happiness = 0;
+					var person = p[f];
+					var left = p[((f - 1) + numFolks) % numFolks];
+					var right = p[((f + 1) + numFolks) % numFolks];
+					
+					happiness += relations[person][left];
+					happiness += relations[person][right];
+					
+					totalHappiness += happiness;
+				}
+				
+				maxHappiness = (totalHappiness > maxHappiness) ? totalHappiness : maxHappiness;
+			}
+			
+			return maxHappiness;
+		}
+		
+		function findOptimalHappiness(input, includeMe) {
+			var relations = parseRelations(input);
+			var folks = parseFolks(relations);
+			
+			if (includeMe) {
+				for (var f = 0, n = folks.length; f < n; ++f) {
+					addRelation(relations, folks[f], 0, 'Me');
+					addRelation(relations, 'Me', 0, folks[f]);
+				}
+				folks.push('Me');
+			}
+			
+			var response = computeHappiness(relations, folks);
+			return response;
+		}
+		
+		function generateOutput() {
+			var puzzleInput = document.getElementById('puzzle-input').value;
+			
+			document.getElementById('output1').value = findOptimalHappiness(puzzleInput, false);
+			document.getElementById('output2').value = findOptimalHappiness(puzzleInput, true);
+		}
+	</script>
+</head>
+<body>
+	<div id="solution">
+		<label for="puzzle-input">Puzzle Input:</label>
+		<textarea id="puzzle-input" style="width: 400px; height: 150px;"></textarea>
+		
+		<button onClick="generateOutput();">Generate Output</button>
+		
+		<label for="output1">Happiness of guest list:</label>
+		<input type="text" id="output1" />
+		
+		<label for="output2">Happiness with me:</label>
+		<input type="text" id="output2" />
+	</div>
+	
+	<script type="text/javascript">
+		new Solution(13, 'solution');
+	</script>
+</body>
+</html>
