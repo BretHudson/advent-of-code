@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Day 17: No Such Thing as Too Much</title>
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+	<link href="https://fonts.googleapis.com/css?family=Exo+2:400,700" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="css/day.css" />
+	<script type="text/javascript" src="js/main.js"></script>
+	<script type="text/javascript">
+		function parseInput(input) {
+			var sizes = [];
+			for (var i = 0, n = input.length; i < n; ++i) {
+				sizes.push(parseInt(input[i], 10));
+			}
+			return sizes;
+		}
+		
+		function findCombinations(sizes) {
+			var fn = function(arr, data, combinations) {
+				if (data.length === 0) {
+					combinations.push(arr);
+				} else {
+					// [ ] / [ 1, 2, 3, 4 ] becomes [ 1 ] / [ 2, 3, 4 ]
+					fn(arr.concat(data[0]), data.slice(1), combinations);
+					// [ ] / [ 1, 2, 3, 4 ] becomes [ ] / [ 2, 3, 4 ]
+					fn(arr, data.slice(1), combinations);
+				}
+				return combinations;
+			};
+			return fn([], sizes, []);
+		}
+		
+		function filterCombinationsBySum(combinations, sumTarget) {
+			var filtered = [];
+			
+			for (var i = 0, n = combinations.length; i < n; ++i) {
+				var combination = combinations[i];
+				var sum = 0;
+				for (var b = 0, nn = combination.length; b < nn; ++b) {
+					sum += combination[b];
+				}
+				if (sum === sumTarget)
+					filtered.push(combination);
+			}
+			
+			return filtered;
+		}
+		
+		function filterContainersByLeastAmount(containers) {
+			var filtered = [];
+			
+			containers.sort(function(a, b) {
+				if (a.length < b.length)
+					return -1;
+				if (a.length > b.length)
+					return 1;
+				return 0;
+			});
+			
+			var fewestContainersAmount = containers[0].length;
+			
+			for (var i = 0, n = containers.length; i < n; ++i) {
+				if (containers[i].length === fewestContainersAmount)
+					filtered.push(containers[i]);
+				else
+					break;
+			}
+			
+			return filtered;
+		}
+		
+		function generateOutput() {
+			var puzzleInput = document.getElementById('puzzle-input').value.split('\n');
+			
+			var sizes = parseInput(puzzleInput);
+			
+			var combinations = findCombinations(sizes);
+			var workingCombinations = filterCombinationsBySum(combinations, 150);
+			var minimumContainersPossibilities = filterContainersByLeastAmount(workingCombinations);
+			
+			document.getElementById('output1').value = workingCombinations.length;
+			document.getElementById('output2').value = minimumContainersPossibilities.length;
+		}
+	</script>
+</head>
+<body>
+	<div id="solution">
+		<label for="puzzle-input">Puzzle Input:</label>
+		<textarea id="puzzle-input" style="width: 400px; height: 150px;"></textarea>
+		
+		<button onClick="generateOutput();">Generate Output</button>
+		
+		<label for="output1">150 Liter Combinations:</label>
+		<input type="text" id="output1" />
+		
+		<label for="output2">Amount With Fewest Containers:</label>
+		<input type="text" id="output2" />
+	</div>
+	
+	<script type="text/javascript">
+		new Solution(17, 'solution');
+	</script>
+</body>
+</html>
