@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Day 15: Science for Hungry People</title>
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+	<link href="https://fonts.googleapis.com/css?family=Exo+2:400,700" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="css/day.css" />
+	<script type="text/javascript" src="js/main.js"></script>
+	<script type="text/javascript">
+		function parseInput(input) {
+			var ingredients = [];
+			
+			for (var i = 0, n = input.length; i < n; ++i) {
+				var regex = /(\w+): capacity (\d+), durability (\d+), flavor (\d+), texture (\d+), calories (\d+)/g;
+				regex = /(\w+): capacity (-?\d+), durability (-?\d+), flavor (-?\d+), texture (-?\d+), calories (-?\d+)/g
+				var match = regex.exec(input[i]);
+				
+				ingredients.push({
+					name: match[1],
+					capacity: parseInt(match[2], 10),
+					durability: parseInt(match[3], 10),
+					flavor: parseInt(match[4], 10),
+					texture: parseInt(match[5], 10),
+					calories: parseInt(match[6], 10)
+				});
+			}
+			
+			return ingredients;
+		}
+		
+		function generateIngredientScore(ingredient, tbsp) {
+			return {
+				capacity: tbsp * ingredient.capacity,
+				durability: tbsp * ingredient.durability,
+				flavor: tbsp * ingredient.flavor,
+				texture: tbsp * ingredient.texture,
+				calories: ingredient.calories
+			};
+		}
+		
+		function combineAmounts(a, b) {
+			return {
+				capacity: a.capacity + b.capacity,
+				durability: a.durability + b.durability,
+				flavor: a.flavor + b.flavor,
+				texture: a.texture + b.texture,
+				calories: a.calories + b.calories
+			};
+		}
+		
+		function calculateTotalScore(val) {
+			var result = 
+				Math.max(0, val.capacity) *
+				Math.max(0, val.durability) *
+				Math.max(0, val.flavor) *
+				Math.max(0, val.texture);
+			return result;
+		}
+		
+		function calculateCalories(ingredients, amounts) {
+			var calories = 0;
+			for (var i = 0, n = amounts.length; i < n; ++i) {
+				calories += ingredients[i].calories * amounts[i];
+			}
+			return calories;
+		}
+		
+		function generateScore(ingredients, amounts) {
+			var ingScores = [];
+			var i = 0;
+			for (var i = 0, n = ingredients.length; i < n; ++i) {
+				ingScores.push(generateIngredientScore(ingredients[i], amounts[i]));
+			}
+			
+			var combined = ingScores[0];
+			for (var s = 1, n = amounts.length; s < n; ++s) {
+				combined = combineAmounts(combined, ingScores[s]);
+			}
+			return calculateTotalScore(combined);
+		}
+		
+		function calculateScores(ingredients, _amounts) {
+			var best = {
+				overall: 0,
+				calories500: 0
+			};
+			
+			var curTotalTbsp = 0;
+			for (var a = 0, n = _amounts.length; a < n; ++a) {
+				curTotalTbsp += _amounts[a];
+			}
+			
+			var total = 100;
+			for (var i = 0, n = total - curTotalTbsp; i <= n; ++i) {
+				var amounts = _amounts.slice();
+				amounts.push(i);
+				if (curTotalTbsp + i === total) {
+					while (amounts.length < ingredients.length) {
+						amounts.push(0);
+					}
+					var scoreResults = generateScore(ingredients, amounts);
+					best.overall = Math.max(best.overall, scoreResults);
+					if (calculateCalories(ingredients, amounts) === 500)
+						best.calories500 = Math.max(best.calories500, scoreResults);
+					break;
+				} else if (amounts.length < ingredients.length) {
+					var scoreResults = calculateScores(ingredients, amounts);
+					best.overall = Math.max(best.overall, scoreResults.overall);
+					best.calories500 = Math.max(best.calories500, scoreResults.calories500);
+				}
+			}
+			
+			return best;
+		}
+		
+		function generateBestCookieScore(ingredients) {
+			return calculateScores(ingredients, []);
+		}
+		
+		function generateOutput() {
+			var puzzleInput = document.getElementById('puzzle-input').value.split('\n');
+			
+			var ingredients = parseInput(puzzleInput);
+			var results = generateBestCookieScore(ingredients);
+			
+			document.getElementById('output1').value = results.overall;
+			document.getElementById('output2').value = results.calories500;
+		}
+	</script>
+</head>
+<body>
+	<div id="solution">
+		<label for="puzzle-input">Puzzle Input:</label>
+		<textarea id="puzzle-input" style="width: 400px; height: 150px;"></textarea>
+		
+		<button onClick="generateOutput();">Generate Output</button>
+		
+		<label for="output1">Output:</label>
+		<input type="text" id="output1" />
+		
+		<label for="output2">Output:</label>
+		<input type="text" id="output2" />
+	</div>
+	
+	<script type="text/javascript">
+		new Solution(15, 'solution');
+	</script>
+</body>
+</html>
