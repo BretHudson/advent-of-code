@@ -11,8 +11,7 @@
 			var ingredients = [];
 			
 			for (var i = 0, n = input.length; i < n; ++i) {
-				var regex = /(\w+): capacity (\d+), durability (\d+), flavor (\d+), texture (\d+), calories (\d+)/g;
-				regex = /(\w+): capacity (-?\d+), durability (-?\d+), flavor (-?\d+), texture (-?\d+), calories (-?\d+)/g
+				var regex = /(\w+): capacity (-?\d+), durability (-?\d+), flavor (-?\d+), texture (-?\d+), calories (-?\d+)/g;
 				var match = regex.exec(input[i]);
 				
 				ingredients.push({
