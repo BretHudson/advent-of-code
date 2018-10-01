@@ -32,7 +32,7 @@
 		}
 		
 		function parseFolks(relations) {
-			let folks = [];
+			var folks = [];
 			for (var k in relations)
 				folks.push(k);
 			return folks;
@@ -56,12 +56,12 @@
 		}
 		
 		function createAllPermutations(folks) {
-			let permutations = permutate([], folks);
+			var permutations = permutate([], folks);
 			return permutations;
 		}
 		
 		function computeHappiness(relations, folks) {
-			let permutations = createAllPermutations(folks);
+			var permutations = createAllPermutations(folks);
 			
 			var maxHappiness = Number.MIN_SAFE_INTEGER;
 			
