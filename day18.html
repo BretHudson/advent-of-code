@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Day 18: Like a GIF For Your Yard</title>
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+	<link href="https://fonts.googleapis.com/css?family=Exo+2:400,700" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="css/day.css" />
+	<script type="text/javascript" src="js/main.js"></script>
+	<script type="text/javascript">
+		function generateGrid(input) {
+			var grid = [];
+			
+			if (input.length === 0)
+				return grid;
+			
+			// Create the grid
+			var rowCount = input[0].length;
+			var colCount = input.length;
+			grid = new Array(rowCount);
+			// TODO(bret): Switch these
+			for (var i = 0; i < rowCount; ++i)
+				grid[i] = new Array(colCount);
+			
+			// Populate grid
+			for (var yy = 0, ny = colCount; yy < ny; ++yy) {
+				var row = [];
+				var line = input[yy];
+				for (var xx = 0, nx = rowCount; xx < nx; ++xx) {
+					grid[xx][yy] = line[xx];
+				}
+			}
+			
+			return grid;
+		}
+		
+		function getCellOn(grid, x, y) {
+			var on = 0;
+			
+			if ((x >= 0) && (y >= 0) && (x < grid.length) && (y < grid[0].length) && (grid[x][y] === '#'))
+				on = 1;
+			
+			return on;
+		}
+		
+		function getNeighborOnCount(grid, x, y) {
+			var count = 0;
+			
+			count += getCellOn(grid, x - 1, y - 1);
+			count += getCellOn(grid, x, y - 1);
+			count += getCellOn(grid, x + 1, y - 1);
+			count += getCellOn(grid, x + 1, y);
+			count += getCellOn(grid, x + 1, y + 1);
+			count += getCellOn(grid, x, y + 1);
+			count += getCellOn(grid, x - 1, y + 1);
+			count += getCellOn(grid, x - 1, y);
+			
+			return count;
+		}
+		
+		function onToChar(on) {
+			return (on) ? '#' : '.';
+		}
+		
+		function generateNextStep(oldGrid, stuck) {
+			// Copy over the array
+			var grid = oldGrid.slice();
+			for (var i = 0, n = grid.length; i < n; ++i)
+				grid[i] = grid[i].slice();
+			
+			// Get the new values
+			for (var yy = 0, ny = grid[0].length; yy < ny; ++yy) {
+				for (var xx = 0, nx = grid.length; xx < nx; ++xx) {
+					var count = getNeighborOnCount(oldGrid, xx, yy);
+					if (getCellOn(oldGrid, xx, yy))
+						grid[xx][yy] = onToChar((count === 2) || (count === 3));
+					else
+						grid[xx][yy] = onToChar(count === 3);
+				}
+			}
+			
+			return grid;
+		}
+		
+		function countLightsOn(grid) {
+			var count = 0;
+			
+			for (var yy = 0, ny = grid.length; yy < ny; ++yy) {
+				for (var xx = 0, nx = grid.length; xx < nx; ++xx) {
+					count += getCellOn(grid, xx, yy);
+				}
+			}
+			
+			return count;
+		}
+		
+		function runSimulation(input, cornersStuck) {
+			var grid = generateGrid(input);
+			
+			var rows = grid.length;
+			var cols = grid[0].length;
+			
+			var steps = 100;
+			for (var i = 0; i < steps; ++i) {
+				grid = generateNextStep(grid);
+				if (cornersStuck) {
+					grid[0][0] =
+					grid[0][cols - 1] =
+					grid[rows - 1][cols - 1] =
+					grid[rows - 1][0] = onToChar(true);
+				}
+			}
+			
+			return countLightsOn(grid);
+		}
+		
+		function generateOutput() {
+			var puzzleInput = document.getElementById('puzzle-input').value.split('\n');
+			
+			var lightsOn = runSimulation(puzzleInput, false);
+			var lightsOnCornersStuck = runSimulation(puzzleInput, true);
+			
+			document.getElementById('output1').value = lightsOn;
+			document.getElementById('output2').value = lightsOnCornersStuck;
+		}
+	</script>
+</head>
+<body>
+	<div id="solution">
+		<label for="puzzle-input">Puzzle Input:</label>
+		<textarea id="puzzle-input" style="width: 400px; height: 150px;"></textarea>
+		
+		<button onClick="generateOutput();">Generate Output</button>
+		
+		<label for="output1">Lights On:</label>
+		<input type="text" id="output1" />
+		
+		<label for="output2">Lights On (Corners "On"):</label>
+		<input type="text" id="output2" />
+	</div>
+	
+	<script type="text/javascript">
+		new Solution(18, 'solution');
+	</script>
+</body>
+</html>
