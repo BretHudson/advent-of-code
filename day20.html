@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Day 20: Infinite Elves and Infinite Houses</title>
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+	<link href="https://fonts.googleapis.com/css?family=Exo+2:400,700" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="css/day.css" />
+	<script type="text/javascript" src="js/main.js"></script>
+	<script type="text/javascript">
+		function reduceAdd(a, b) {
+			return a + b;
+		}
+		
+		function findHouse(amount, presentsPerElf, maxTrips) {
+			var targetHouse = -1;
+			
+			var maxHouse = Math.ceil(amount / presentsPerElf);
+			var arr = new Array(maxHouse + 1);
+			
+			if (maxTrips === undefined)
+				maxTrips = maxHouse;
+			
+			for (var house = 1; house < maxHouse; ++house)
+				arr[house] = 0;
+			
+			for (var elf = 1; elf <= maxHouse; ++elf) {
+				var trips = 0;
+				for (var house = elf; (house <= maxHouse) && (trips < maxTrips); house += elf, ++trips) {
+					arr[house] += presentsPerElf * elf;
+				}
+			}
+			
+			for (var house = 1; house < maxHouse; ++house) {
+				if (arr[house] >= amount) {
+					targetHouse = house;
+					break;
+				}
+			}
+			
+			return targetHouse;
+		}
+		
+		function generateOutput() {
+			var puzzleInput = parseInt(document.getElementById('puzzle-input').value, 10);
+			
+			var house = findHouse(puzzleInput, 10);
+			var house2 = findHouse(puzzleInput, 11, 50);
+			
+			document.getElementById('output1').value = house;
+			document.getElementById('output2').value = house2;
+		}
+	</script>
+</head>
+<body>
+	<div id="solution">
+		<label for="puzzle-input">Puzzle Input:</label>
+		<input type="text" id="puzzle-input" />
+		
+		<button onClick="generateOutput();">Generate Output</button>
+		
+		<label for="output1">Lowest House Number (10, &#8734;):</label>
+		<input type="text" id="output1" />
+		
+		<label for="output2">Lowest House Number (11, 50):</label>
+		<input type="text" id="output2" />
+	</div>
+	
+	<script type="text/javascript">
+		new Solution(20, 'solution');
+	</script>
+</body>
+</html>
