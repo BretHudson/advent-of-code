@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Day 19: Medicine for Rudolph</title>
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+	<link href="https://fonts.googleapis.com/css?family=Exo+2:400,700" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="css/day.css" />
+	<script type="text/javascript" src="js/main.js"></script>
+	<script type="text/javascript">
+		function parseInput(input) {
+			var result = { base: null, replacements: [] };
+			
+			var base = false;
+			for (var i = 0, n = input.length; i < n; ++i) {
+				var line = input[i];
+				if (line === '') {
+					base = true;
+					continue;
+				}
+				
+				if (base === true) {
+					result.base = line;
+					break;
+				}
+				
+				var regex = /(\w+) => (\w+)/g;
+				var match = regex.exec(line);
+				//console.log({ line, match });
+				atom = match[1];
+				
+				if (result.replacements[atom] === undefined)
+					result.replacements[atom] = [];
+				
+				result.replacements[atom].push(match[2]);
+			}
+			
+			return result;
+		}
+		
+		function replaceSubStr(str, index, replaceStr, length) {
+			return str.substr(0, index) + replaceStr + str.substr(index + length)
+		}
+		
+		function generateMolecules(base, replacements) {
+			var molecules = [];
+			
+			var sub, i, temp, index, newMolecule;
+			for (var atomToReplace in replacements) {
+				sub = replacements[atomToReplace];
+				
+				for (i = 0, n = sub.length; i < n; ++i) {
+					temp = base.slice();
+					
+					var dashes = new Array(atomToReplace.length + 1).join('-');
+					while ((index = temp.indexOf(atomToReplace)) > -1) {
+						temp = replaceSubStr(temp, index, dashes, atomToReplace.length);
+						
+						newMolecule = replaceSubStr(base, index, sub[i], atomToReplace.length);
+						
+						if (molecules.indexOf(newMolecule) === -1)
+							molecules.push(newMolecule);
+					}
+				}
+			}
+			
+			return molecules;
+		}
+		
+		function findStepsToMedicineMolecule(str) {
+			// NOTE(bret): Thanks askalski* for the math - I spent well over 10 hours crafting different solutions and came pretty close, but ultimately this solution was the simplest and uses minimal processing power
+			// * https://new.reddit.com/r/adventofcode/comments/3xflz8/day_19_solutions/cy4etju/
+			
+			str = str.replace(/Rn/g, '(')
+					 .replace(/Ar/g, ')')
+					 .replace(/Y/g, ',')
+					 .replace(/[A-Z][a-z]/g, 'X')
+					 .replace(/[A-Z]/g, 'X');
+			
+			var tokens = str.length;
+			var parenthesis = str.replace(/[A-Za-z\,]/g, '').length;
+			var commas = str.replace(/[A-Za-z\(\)]/g, '').length;
+			var count = tokens - parenthesis - 2 * commas - 1;
+			return count;
+		}
+		
+		function generateOutput() {
+			var puzzleInput = document.getElementById('puzzle-input').value.split('\n');
+			
+			var parsedInput = parseInput(puzzleInput);
+			
+			// Get results
+			var newMolecules = generateMolecules(parsedInput.base, parsedInput.replacements);
+			var steps = findStepsToMedicineMolecule(parsedInput.base);
+			
+			document.getElementById('output1').value = newMolecules.length;
+			document.getElementById('output2').value = steps;
+		}
+	</script>
+</head>
+<body>
+	<div id="solution">
+		<label for="puzzle-input">Puzzle Input:</label>
+		<textarea id="puzzle-input" style="width: 400px; height: 150px;"></textarea>
+		
+		<button onClick="generateOutput();">Generate Output</button>
+		
+		<label for="output1">Unique Molecules:</label>
+		<input type="text" id="output1" />
+		
+		<label for="output2">Output:</label>
+		<input type="text" id="output2" />
+	</div>
+	
+	<script type="text/javascript">
+		new Solution(19, 'solution');
+	</script>
+</body>
+</html>
