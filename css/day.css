@@ -83,8 +83,8 @@ input[type=text], textarea {
 	outline: none;
 	max-width: 100%;
     font-size: 16px;
-    border-width: 2px;
-    border-color: #BDBDBD;
+    border-width: 5px;
+    border-color: #F44336;
     padding: 14px;
 	-webkit-border-radius: 30px;
 	-moz-border-radius: 30px;
