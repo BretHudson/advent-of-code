@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Day 22: Wizard Simulator 20XX</title>
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+	<link href="https://fonts.googleapis.com/css?family=Exo+2:400,700" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="css/day.css" />
+	<script type="text/javascript" src="js/main.js"></script>
+	<script type="text/javascript">
+		var input = ``;
+		
+		function log(str) {
+			//console.log(str);
+		}
+		
+		function battle(player, boss, spells, spellQueue, leastMana) {
+			player = { hp: player.hp, armor: player.armor, mana: player.mana, spent: 0 };
+			boss = { hp: boss.hp, damage: boss.damage };
+			
+			var results = {
+				winner: null,
+				spent: 0,
+				leastMana: leastMana,
+				next: []
+			};
+			
+			var curEffects = [];
+			
+			var showStats = function() {
+				log('- Player has ' + player.hp + ' hit points, ' + player.armor + ' armor, ' + player.mana + ' mana');
+				log('- Boss has ' + boss.hp + ' hit points');
+			};
+			
+			var executeEffects = function() {
+				for (var c = 0; c < curEffects.length; ++c) {
+					var cur = curEffects[c];
+					if (cur.effect.onTurn !== undefined)
+						cur.effect.onTurn(player, boss);
+					
+					if (--cur.timer === 0) {
+						if (cur.effect.onEnd !== undefined)
+							cur.effect.onEnd(player, boss);
+						curEffects.splice(c, 1);
+						--c;
+					}
+					
+					cur.effect.print(cur.timer);
+				}
+			};
+			
+			var checkWinner = function() {
+				if (player.hp <= 0)
+					results.winner = 'boss';
+				else if (boss.hp <= 0)
+					results.winner = 'player';
+				return results.winner;
+			};
+			
+			var checkMana = function() {
+				return (player.spent < leastMana);
+			}
+			
+			var originalSpellQueue = spellQueue.slice();
+			spellQueue = spellQueue.slice();
+			while (spellQueue.length > 0) {
+				var curSpell = spells[spellQueue.shift()];
+				
+				/// PLAYER TURN
+				log('\n-- Player turn --');
+				showStats();
+				
+				executeEffects();
+				
+				log('Player casts ' + curSpell.name + '.');
+				var effect = curSpell.onCasted(player, boss);
+				if (effect !== null) {
+					if (effect.onCasted !== undefined)
+						effect.onCasted(player, boss);
+					curEffects.push({
+						timer: effect.length,
+						effect: effect
+					});
+				}
+				
+				if (checkWinner() !== null) break;
+				
+				/// BOSS TURN
+				log('\n-- Boss turn --');
+				showStats();
+				
+				executeEffects();
+				if (checkWinner() !== null) break;
+				
+				player.hp -= (boss.damage - player.armor);
+				
+				if (checkWinner() !== null) break;
+				
+				if (checkMana() === false) break;
+			}
+			
+			results.spent = player.spent;
+			if ((results.winner === null)) {
+				
+				if (checkMana() === true) {
+					//console.log('fuck yes');
+				} else {
+					//console.log('fuck no');
+				}
+				
+				//console.log('hi');
+				for (var s = 0, n = spells.length; s < n; ++s) {
+					console.log('------------');
+					var spell = spells[s];
+					
+					// TODO(bret): Make sure we account for an increase on the next turn from the effects! (if effects.RECHRG is present, then check for <= player.mana + 101)
+					var canCast = (spell.mana <= player.mana);
+					if ((canCast === true) && (s >= 2)) {
+						for (var e = 0, num = curEffects.length; e < num; ++e) {
+							if (spell.effect === curEffects[e].effect) {
+								canCast = false;
+								break;
+							}
+						}
+					}
+					
+					if (canCast === true) {
+						var queue = originalSpellQueue.slice();
+						queue.push(s);
+						results.next.push(queue);
+					}
+				}
+			} else if (results.winner === 'player') {
+				// TODO(bret): Move this to a place where it'll only get set if the player has won!
+				if (checkMana() === true) {
+					leastMana = results.spent;
+					console.log('yay');
+				}
+				console.log('player won!');
+				console.log(originalSpellQueue);
+			} else {
+				//console.log('boss won :(');
+				//console.log(results);
+			}
+			
+			return results;
+		}
+		
+		function generateOutput() {
+			var puzzleInput = document.getElementById('puzzle-input').value;
+			
+			var effects = {
+				SHIELD: {
+					length: 6,
+					onCasted: function(player, boss) {
+						player.armor = 7;
+					},
+					onEnd: function(player, boss) {
+						player.armor = 0;
+					},
+					print: function(timer) {
+						log('Shield\'s timer is now ' + timer + '.');
+					}
+				},
+				POISON: {
+					length: 6,
+					onTurn: function(player, boss) {
+						boss.hp -= 3;
+					},
+					print: function(timer) {
+						log('Poison deals 3 damage; its timer is now ' + timer + '.');
+					}
+				},
+				RECHRG: {
+					length: 5,
+					onTurn: function(player, boss) {
+						player.mana += 101;
+					},
+					print: function(timer) {
+						log('Recharge provides 101 mana; its timer is now ' + timer + '.');
+					}
+				}
+			};
+			
+			var spells = [
+				{ // 0
+					name: 'Magic Missile',
+					mana: 53,
+					effect: null,
+					onCasted: function(player, boss) {
+						player.mana -= this.mana;
+						player.spent += this.mana;
+						boss.hp -= 4;
+						return this.effect;
+					}
+				},
+				{ // 1
+					name: 'Drain',
+					mana: 73,
+					effect: null,
+					onCasted: function(player, boss) {
+						player.mana -= this.mana;
+						player.spent += this.mana;
+						boss.hp -= 2;
+						player.hp += 2;
+						return this.effect;
+					}
+				},
+				{ // 2
+					name: 'Shield',
+					mana: 113,
+					effect: effects.SHIELD,
+					onCasted: function(player, boss) {
+						player.mana -= this.mana;
+						player.spent += this.mana;
+						return this.effect;
+					}
+				},
+				{ // 3
+					name: 'Poison',
+					mana: 173,
+					effect: effects.POISON,
+					onCasted: function(player, boss) {
+						player.mana -= this.mana;
+						player.spent += this.mana;
+						return this.effect;
+					}
+				},
+				{ // 4
+					name: 'Recharge',
+					mana: 229,
+					effect: effects.RECHRG,
+					onCasted: function(player, boss) {
+						player.mana -= this.mana;
+						player.spent += this.mana;
+						return this.effect;
+					}
+				}
+			];
+			
+			// 10, 250
+			// 50, 500
+			var player = {
+				hp: 50,
+				armor: 0,
+				mana: 500
+			};
+			
+			// 13, 8
+			// 14, 8
+			// 58, 9
+			var boss = {
+				hp: 58,
+				damage: 9
+			};
+			
+			var spellQueueTest1 = [ 3, 0 ];
+			var spellQueueTest2 = [ 4, 2, 1, 3, 0 ];
+			var spellQueueTest3 = [ 2 ];
+			var results = battle(player, boss, spells, spellQueueTest3, 999);
+			console.log(results);
+			
+			return;
+			
+			var testQueue = [ [] ];
+			
+			var leastMana = Number.MAX_SAFE_INTEGER;
+			var winning = null;
+			
+			var iter = 0;
+			while (testQueue.length > 0) {
+				var test = testQueue.shift();
+				var results = battle(player, boss, spells, test, leastMana);
+				if (results.winner === 'player') {
+					console.log('spent', results.spent);
+					leastMana = Math.min(leastMana, results.spent);
+					if (leastMana === results.spent)
+						winning = test.slice();
+				}
+				for (var i = 0; i < results.next.length; ++i) {
+					testQueue.push(results.next[i]);
+				}
+				
+				if (iter++ > 999999)
+					break;
+			}
+			
+			console.log({ iter });
+			console.log({ leastMana });
+			console.log({ winning });
+			
+			// Boss always deals at least 1 damage
+			
+			document.getElementById('output1').value = undefined;
+			document.getElementById('output2').value = undefined;
+		}
+		
+		document.addEventListener('DOMContentLoaded', function() {
+			document.getElementById('puzzle-input').value = input;
+			
+			generateOutput();
+		});
+	</script>
+</head>
+<body>
+	<div id="solution">
+		<label for="puzzle-input">Puzzle Input:</label>
+		<input type="text" id="puzzle-input" />
+		
+		<button onClick="generateOutput();">Generate Output</button>
+		
+		<label for="output1">Output:</label>
+		<input type="text" id="output1" />
+		
+		<label for="output2">Output:</label>
+		<input type="text" id="output2" />
+	</div>
+	
+	<script type="text/javascript">
+		new Solution(22, 'solution');
+	</script>
+</body>
+</html>
