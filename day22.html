@@ -7,11 +7,27 @@
 	<link rel="stylesheet" type="text/css" href="css/day.css" />
 	<script type="text/javascript" src="js/main.js"></script>
 	<script type="text/javascript">
-		var input = ``;
-		
-		/*function log(str) {
-			//console.log(str);
-		}*/
+		function parseInput(input) {
+			var results = { hp: 0, damage: 0 };
+			
+			input = input.split('\n');
+			for (var i = 0, n = input.length; i < n; ++i) {
+				var line = input[i];
+				var regex = /([\w\s]+): (\d+)/g;
+				var match = regex.exec(line);
+				switch (match[1]) {
+					case 'Hit Points': {
+						results.hp = parseInt(match[2], 10);
+					} break;
+					
+					case 'Damage': {
+						results.damage = parseInt(match[2], 10);
+					} break;
+				}
+			}
+			
+			return results;
+		}
 		
 		function battle(player, boss, spells, spellQueue, leastMana, poison) {
 			player = { hp: player.hp, armor: player.armor, mana: player.mana, spent: 0 };
@@ -130,32 +146,7 @@
 			return results;
 		}
 		
-		function doTheStuff(effects, spells) {
-			//var player = { hp: 10, armor: 0, mana: 250 };
-			var player = { hp: 50, armor: 0, mana: 500 };
-			
-			//var boss = { hp: 13, damage: 8 };
-			//var boss = { hp: 14, damage: 8 };
-			var boss = { hp: 58, damage: 9 };
-			
-			var spellQueueTest1 = [ 3, 0 ];
-			var spellQueueTest2 = [ 4, 2, 1, 3, 0 ];
-			var spellQueueTest3 = [ 2 ];
-			var test = [ 3, 4, 1, 3, 4, 2, 3, 0, 0 ];
-			var testA = [ 'P', 'R', 'D', 'P', 'R', 'S', 'P', 'M', 'M' ];
-			var results = battle(player, boss, spells, test, 9999);
-			console.log('results');
-			console.log(results);
-		}
-		
-		function getCost(spells, queue) {
-			var cost = 0;
-			for (let i = 0, n = queue.length; i < n; ++i)
-				cost += spells[queue[i]].mana;
-			return cost;
-		}
-		
-		function findLeastMana(part, bossHP, bossDamage, poison) {
+		function findLeastMana(input, poison) {
 			var effects = {
 				SHIELD: {
 					length: 6,
@@ -251,33 +242,23 @@
 			var nextQueues = [ [ ] ];
 			
 			var player = { hp: 50, armor: 0, mana: 500 };
-			var boss = { hp: bossHP, damage: bossDamage };
+			var boss = { hp: input.hp, damage: input.damage };
 			
 			var leastMana = Number.MAX_SAFE_INTEGER;
-			var winning = null;
 			
 			var iter = 0;
 			while (nextQueues.length > 0) {
 				var queue = nextQueues.shift();
 				var results = battle(player, boss, spells, queue, leastMana, poison);
-				if (results.winner === 'player') {
-					console.log('spent', results.spent, 'at', iter);
+				if (results.winner === 'player')
 					leastMana = Math.min(leastMana, results.spent);
-					if (leastMana === results.spent)
-						winning = queue.slice();
-				}
-				for (var i = 0; i < results.next.length; ++i) {
-					if (getCost(spells, results.next[i]) < leastMana)
-						nextQueues.push(results.next[i]);
-				}
+				
+				for (var i = 0; i < results.next.length; ++i)
+					nextQueues.push(results.next[i]);
 				
 				if (iter++ > 100000)
 					break;
 			}
-			
-			console.log({ iter });
-			console.log({ leastMana }, Number.MAX_SAFE_INTEGER);
-			console.log({ winning });
 			
 			return leastMana;
 		}
@@ -285,24 +266,20 @@
 		function generateOutput() {
 			var puzzleInput = document.getElementById('puzzle-input').value;
 			
-			var leastMana1 = findLeastMana(0, 58, 9, 0);
-			var leastMana2 = findLeastMana(0, 58, 9, 1);
+			var input = parseInput(puzzleInput);
+			
+			var leastMana1 = findLeastMana(input, 0);
+			var leastMana2 = findLeastMana(input, 1);
 			
 			document.getElementById('output1').value = leastMana1;
 			document.getElementById('output2').value = leastMana2;
 		}
-		
-		document.addEventListener('DOMContentLoaded', function() {
-			document.getElementById('puzzle-input').value = input;
-			
-			generateOutput();
-		});
 	</script>
 </head>
 <body>
 	<div id="solution">
 		<label for="puzzle-input">Puzzle Input:</label>
-		<input type="text" id="puzzle-input" />
+		<textarea id="puzzle-input" style="width: 400px; height: 150px;"></textarea>
 		
 		<button onClick="generateOutput();">Generate Output</button>
 		
