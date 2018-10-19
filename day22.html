@@ -9,27 +9,27 @@
 	<script type="text/javascript">
 		var input = ``;
 		
-		function log(str) {
+		/*function log(str) {
 			//console.log(str);
-		}
+		}*/
 		
-		function battle(player, boss, spells, spellQueue, leastMana) {
+		function battle(player, boss, spells, spellQueue, leastMana, poison) {
 			player = { hp: player.hp, armor: player.armor, mana: player.mana, spent: 0 };
 			boss = { hp: boss.hp, damage: boss.damage };
 			
 			var results = {
 				winner: null,
 				spent: 0,
-				leastMana: leastMana,
 				next: []
 			};
 			
 			var curEffects = [];
 			
-			var showStats = function() {
+			/*var showStats = function(name) {
+				log('\n-- ' + name + ' turn --');
 				log('- Player has ' + player.hp + ' hit points, ' + player.armor + ' armor, ' + player.mana + ' mana');
 				log('- Boss has ' + boss.hp + ' hit points');
-			};
+			};*/
 			
 			var executeEffects = function() {
 				for (var c = 0; c < curEffects.length; ++c) {
@@ -43,8 +43,6 @@
 						curEffects.splice(c, 1);
 						--c;
 					}
-					
-					cur.effect.print(cur.timer);
 				}
 			};
 			
@@ -56,22 +54,19 @@
 				return results.winner;
 			};
 			
-			var checkMana = function() {
-				return (player.spent < leastMana);
-			}
-			
-			var originalSpellQueue = spellQueue.slice();
+			var originalSpellQueue = spellQueue;
 			spellQueue = spellQueue.slice();
 			while (spellQueue.length > 0) {
 				var curSpell = spells[spellQueue.shift()];
 				
 				/// PLAYER TURN
-				log('\n-- Player turn --');
-				showStats();
+				//showStats('Player');
+				
+				player.hp -= poison;
 				
 				executeEffects();
 				
-				log('Player casts ' + curSpell.name + '.');
+				//log('Player casts ' + curSpell.name + '.');
 				var effect = curSpell.onCasted(player, boss);
 				if (effect !== null) {
 					if (effect.onCasted !== undefined)
@@ -85,8 +80,7 @@
 				if (checkWinner() !== null) break;
 				
 				/// BOSS TURN
-				log('\n-- Boss turn --');
-				showStats();
+				//showStats('Boss');
 				
 				executeEffects();
 				if (checkWinner() !== null) break;
@@ -95,29 +89,27 @@
 				
 				if (checkWinner() !== null) break;
 				
-				if (checkMana() === false) break;
+				if (player.spent >= leastMana) break;
 			}
 			
 			results.spent = player.spent;
 			if ((results.winner === null)) {
-				
-				if (checkMana() === true) {
-					//console.log('fuck yes');
-				} else {
-					//console.log('fuck no');
-				}
-				
-				//console.log('hi');
 				for (var s = 0, n = spells.length; s < n; ++s) {
-					console.log('------------');
 					var spell = spells[s];
 					
-					// TODO(bret): Make sure we account for an increase on the next turn from the effects! (if effects.RECHRG is present, then check for <= player.mana + 101)
-					var canCast = (spell.mana <= player.mana);
+					var recharge = 0;
+					for (var e = 0, num = curEffects.length; e < num; ++e) {
+						if (curEffects[e].effect == spells[4].effect) {
+							recharge = 101;
+							break;
+						}
+					}
+					
+					var canCast = (spell.mana <= player.mana + recharge);
 					if ((canCast === true) && (s >= 2)) {
 						for (var e = 0, num = curEffects.length; e < num; ++e) {
 							if (spell.effect === curEffects[e].effect) {
-								canCast = false;
+								canCast = (curEffects[e].timer <= 1);
 								break;
 							}
 						}
@@ -129,28 +121,45 @@
 						results.next.push(queue);
 					}
 				}
-			} else if (results.winner === 'player') {
-				// TODO(bret): Move this to a place where it'll only get set if the player has won!
-				if (checkMana() === true) {
-					leastMana = results.spent;
-					console.log('yay');
-				}
-				console.log('player won!');
-				console.log(originalSpellQueue);
+			}/* else if (results.winner === 'player') {
+				//log('player won!');
 			} else {
-				//console.log('boss won :(');
-				//console.log(results);
-			}
+				//log('boss won :(');
+			}*/
 			
 			return results;
 		}
 		
-		function generateOutput() {
-			var puzzleInput = document.getElementById('puzzle-input').value;
+		function doTheStuff(effects, spells) {
+			//var player = { hp: 10, armor: 0, mana: 250 };
+			var player = { hp: 50, armor: 0, mana: 500 };
 			
+			//var boss = { hp: 13, damage: 8 };
+			//var boss = { hp: 14, damage: 8 };
+			var boss = { hp: 58, damage: 9 };
+			
+			var spellQueueTest1 = [ 3, 0 ];
+			var spellQueueTest2 = [ 4, 2, 1, 3, 0 ];
+			var spellQueueTest3 = [ 2 ];
+			var test = [ 3, 4, 1, 3, 4, 2, 3, 0, 0 ];
+			var testA = [ 'P', 'R', 'D', 'P', 'R', 'S', 'P', 'M', 'M' ];
+			var results = battle(player, boss, spells, test, 9999);
+			console.log('results');
+			console.log(results);
+		}
+		
+		function getCost(spells, queue) {
+			var cost = 0;
+			for (let i = 0, n = queue.length; i < n; ++i)
+				cost += spells[queue[i]].mana;
+			return cost;
+		}
+		
+		function findLeastMana(part, bossHP, bossDamage, poison) {
 			var effects = {
 				SHIELD: {
 					length: 6,
+					type: 'SHIELD',
 					onCasted: function(player, boss) {
 						player.armor = 7;
 					},
@@ -158,25 +167,27 @@
 						player.armor = 0;
 					},
 					print: function(timer) {
-						log('Shield\'s timer is now ' + timer + '.');
+						//log('Shield\'s timer is now ' + timer + '.');
 					}
 				},
 				POISON: {
 					length: 6,
+					type: 'POISON',
 					onTurn: function(player, boss) {
 						boss.hp -= 3;
 					},
 					print: function(timer) {
-						log('Poison deals 3 damage; its timer is now ' + timer + '.');
+						//log('Poison deals 3 damage; its timer is now ' + timer + '.');
 					}
 				},
 				RECHRG: {
 					length: 5,
+					type: 'RECHRG',
 					onTurn: function(player, boss) {
 						player.mana += 101;
 					},
 					print: function(timer) {
-						log('Recharge provides 101 mana; its timer is now ' + timer + '.');
+						//log('Recharge provides 101 mana; its timer is now ' + timer + '.');
 					}
 				}
 			};
@@ -237,61 +248,48 @@
 				}
 			];
 			
-			// 10, 250
-			// 50, 500
-			var player = {
-				hp: 50,
-				armor: 0,
-				mana: 500
-			};
+			var nextQueues = [ [ ] ];
 			
-			// 13, 8
-			// 14, 8
-			// 58, 9
-			var boss = {
-				hp: 58,
-				damage: 9
-			};
-			
-			var spellQueueTest1 = [ 3, 0 ];
-			var spellQueueTest2 = [ 4, 2, 1, 3, 0 ];
-			var spellQueueTest3 = [ 2 ];
-			var results = battle(player, boss, spells, spellQueueTest3, 999);
-			console.log(results);
-			
-			return;
-			
-			var testQueue = [ [] ];
+			var player = { hp: 50, armor: 0, mana: 500 };
+			var boss = { hp: bossHP, damage: bossDamage };
 			
 			var leastMana = Number.MAX_SAFE_INTEGER;
 			var winning = null;
 			
 			var iter = 0;
-			while (testQueue.length > 0) {
-				var test = testQueue.shift();
-				var results = battle(player, boss, spells, test, leastMana);
+			while (nextQueues.length > 0) {
+				var queue = nextQueues.shift();
+				var results = battle(player, boss, spells, queue, leastMana, poison);
 				if (results.winner === 'player') {
-					console.log('spent', results.spent);
+					console.log('spent', results.spent, 'at', iter);
 					leastMana = Math.min(leastMana, results.spent);
 					if (leastMana === results.spent)
-						winning = test.slice();
+						winning = queue.slice();
 				}
 				for (var i = 0; i < results.next.length; ++i) {
-					testQueue.push(results.next[i]);
+					if (getCost(spells, results.next[i]) < leastMana)
+						nextQueues.push(results.next[i]);
 				}
 				
-				if (iter++ > 999999)
+				if (iter++ > 100000)
 					break;
 			}
 			
 			console.log({ iter });
-			console.log({ leastMana });
+			console.log({ leastMana }, Number.MAX_SAFE_INTEGER);
 			console.log({ winning });
 			
-			// Boss always deals at least 1 damage
+			return leastMana;
+		}
+		
+		function generateOutput() {
+			var puzzleInput = document.getElementById('puzzle-input').value;
 			
-			document.getElementById('output1').value = undefined;
-			document.getElementById('output2').value = undefined;
+			var leastMana1 = findLeastMana(0, 58, 9, 0);
+			var leastMana2 = findLeastMana(0, 58, 9, 1);
+			
+			document.getElementById('output1').value = leastMana1;
+			document.getElementById('output2').value = leastMana2;
 		}
 		
 		document.addEventListener('DOMContentLoaded', function() {
