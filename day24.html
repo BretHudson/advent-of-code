@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Day 24: It Hangs in the Balance</title>
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+	<link href="https://fonts.googleapis.com/css?family=Exo+2:400,700" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="css/day.css" />
+	<script type="text/javascript" src="js/main.js"></script>
+	<script type="text/javascript">
+		function parseInput(input) {
+			var results = input.split('\n');
+			
+			for (var r = 0, n = results.length; r < n; ++r) {
+				results[r] = parseInt(results[r], 10);
+			}
+			
+			return results.reverse();
+		}
+		
+		function computeTotalWeight(weights) {
+			var totalWeight = 0;
+			for (var i = 0, n = weights.length; i < n; ++i) {
+				totalWeight += weights[i];
+			}
+			return totalWeight;
+		}
+		
+		function getCombinations(weights, n) {
+			var results = [];
+			
+			var queue = [ [] ];
+			
+			var queueLength;
+			var numWeights = weights.length;
+			for (var i = 0; i < numWeights; ++i) {
+				queueLength = queue.length;
+				for (var q = 0; q < queueLength; ++q) {
+					var cur = queue[q];
+					var next = cur.slice().concat([ weights[i] ]);
+					if (cur.length + 1 === n)
+						results.push(next);
+					else
+						queue.push(next);
+				}
+			}
+			
+			return results;
+		}
+		
+		function findOptimalGrouping(weights, numGroups) {
+			var totalWeight = computeTotalWeight(weights);
+			var groupTargetWeight = totalWeight / numGroups;
+			
+			var results = [];
+			var n = 2;
+			while (!results.length) {
+				results = getCombinations(weights, n++).filter(function(item) {
+					return computeTotalWeight(item) === groupTargetWeight;
+				});
+			}
+			
+			results = results.map(function(a) {
+				return a.reduce(function(r, v) {
+					return r * v;
+				});
+			}).sort(function(a, b) {
+				return a - b;
+			});
+			
+			return results[0];
+		}
+		
+		function generateOutput() {
+			var puzzleInput = document.getElementById('puzzle-input').value;
+			
+			var weights = parseInput(puzzleInput);
+			
+			var idealQuantumEntanglement3 = findOptimalGrouping(weights, 3);
+			var idealQuantumEntanglement4 = findOptimalGrouping(weights, 4);
+			
+			document.getElementById('output1').value = idealQuantumEntanglement3;
+			document.getElementById('output2').value = idealQuantumEntanglement4;
+		}
+	</script>
+</head>
+<body>
+	<div id="solution">
+		<label for="puzzle-input">Puzzle Input:</label>
+		<textarea id="puzzle-input" style="width: 400px; height: 150px;"></textarea>
+		
+		<button onClick="generateOutput();">Generate Output</button>
+		
+		<label for="output1">Ideal Q-Entanglement (3):</label>
+		<input type="text" id="output1" />
+		
+		<label for="output2">Ideal Q-Entanglement (4):</label>
+		<input type="text" id="output2" />
+	</div>
+	
+	<script type="text/javascript">
+		new Solution(24, 'solution');
+	</script>
+</body>
+</html>
