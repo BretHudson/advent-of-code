@@ -12,6 +12,8 @@ SolutionFrame = function(id) {
 	
 	var colDiv = document.createElement('div');
 	colDiv.className = 'day col-md-6 col-lg-4';
+	if (id === 25)
+		colDiv.className = 'day col-md-6 col-md-push-3 col-lg-4 col-lg-push-4';
 	colDiv.appendChild(iframe);
 	
 	this.colDiv = colDiv;
