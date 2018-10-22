@@ -29,10 +29,6 @@ function addMetaTags(day) {
 		elem.setAttribute('content', properties[key]);
 		head.appendChild(elem);
 	}
-	
-	console.log(head);
-	
-	console.log();
 }
 
 SolutionFrame = function(id) {
