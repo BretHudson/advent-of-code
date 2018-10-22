@@ -1,3 +1,40 @@
+function addMetaTags(day) {
+	var head = document.head;
+	
+	var baseURL = window.location.origin + '/AdventOfCode2015/';
+	
+	var description = 'JavaScript Solutions for Advent of Code 2015';
+	var siteName = 'Bret Hudson\'s Advent of Code 2015';
+	var title = siteName;
+	var url = baseURL;
+	if (day !== undefined) {
+		description = 'Advent of Code 2015 Day ' + day + ' solution (JavaScript)';
+		title = 'Day ' + day + ' - ' + title;
+		url += 'day' + day;
+	}
+	
+	var properties = {
+		description: description,
+		image: baseURL + 'img/preview.png',
+		site_name: siteName,
+		title: title,
+		type: 'website',
+		url: url
+	};
+	
+	var elem;
+	for (var key in properties) {
+		elem = document.createElement('meta');
+		elem.setAttribute('property', key);
+		elem.setAttribute('content', properties[key]);
+		head.appendChild(elem);
+	}
+	
+	console.log(head);
+	
+	console.log();
+}
+
 SolutionFrame = function(id) {
 	this.id = id;
 	
@@ -29,6 +66,8 @@ SolutionFrame.prototype.addToDOM = function() {
 }
 
 Solution = function(id, div) {
+	addMetaTags(id);
+	
 	var h2 = document.createElement('h2');
 	h2.innerHTML = '<a target="_parent" id="link-day-' + id + '" href="day' + id + '">Day ' + id + '</a>';
 	
@@ -44,3 +83,10 @@ Solution = function(id, div) {
 	this.div.parentNode.insertBefore(h2, this.div);
 	this.div.parentNode.appendChild(h4);
 }
+/*
+<meta property="og:description" content="Hi! I'm Bret Hudson, the kid who wanted to do everything. So he did. This is my portfolio." />
+	<meta property="og:image" content="https://brethudson.com/img/yksi-thumb.png" />
+	<meta property="og:site_name" content="Bret Hudson" />
+	<meta property="og:title" content="Bret Hudson" />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="https://brethudson.com:443/" />*/
