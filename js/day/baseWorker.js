@@ -12,7 +12,7 @@ let onmessagefunc = (day, subtitle, func) => {
 			} break;
 			
 			case 'execute': {
-				let result = func(e.data.input, (result) => {
+				func(e.data.input, (result) => {
 					postMessage({
 						msg: 'result',
 						result: result,
