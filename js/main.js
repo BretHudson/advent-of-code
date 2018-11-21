@@ -183,6 +183,12 @@ let showLetter = () => {
 	letterTransformPos = 0;
 	setLetterTransform();
 	
+	playLoading(false);
+	
+	letter.querySelector('#puzzle-input').value = '';
+	letter.querySelector('#result-1').value = '';
+	letter.querySelector('#result-2').value = '';
+	
 	letter.className = 'show';
 };
 
