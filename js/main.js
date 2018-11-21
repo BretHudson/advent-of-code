@@ -1,4 +1,4 @@
-const NUM_DAYS = 3;
+const NUM_DAYS = 4;
 
 Math.clamp = (val, min, max) => {
 	return Math.min(Math.max(val, min), max);
