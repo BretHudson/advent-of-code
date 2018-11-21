@@ -1,4 +1,4 @@
-const NUM_DAYS = 1;
+const NUM_DAYS = 2;
 
 Math.clamp = (val, min, max) => {
 	return Math.min(Math.max(val, min), max);
@@ -66,7 +66,7 @@ let openWorker = (id) => {
 				playLoading(false);
 			} break;
 		};
-	}
+	};
 };
 
 let closeWorker = () => {
