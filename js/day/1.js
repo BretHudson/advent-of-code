@@ -1,5 +1,5 @@
 importScripts('baseWorker.js');
-onmessage = onmessagefunc(1, 'No Time for a Taxicab', (input) => {
+onmessage = onmessagefunc(1, 'No Time for a Taxicab', (input, callback) => {
 	let result = [ null, null ];
 	
 	input = input.split(', ');
@@ -36,5 +36,5 @@ onmessage = onmessagefunc(1, 'No Time for a Taxicab', (input) => {
 	
 	result[0] = getDist(blocks);
 	
-	return result;
+	callback(result);
 });

@@ -1,5 +1,5 @@
 importScripts('baseWorker.js');
-onmessage = onmessagefunc(2, 'Bathroom Security', (input) => {
+onmessage = onmessagefunc(2, 'Bathroom Security', (input, callback) => {
 	let result = [ '', '' ];
 	
 	let ninecode = '';
@@ -52,5 +52,5 @@ onmessage = onmessagefunc(2, 'Bathroom Security', (input) => {
 		result[1] += valueAt(key13[0], key13[1]);
 	});
 	
-	return result;
+	callback(result);
 });

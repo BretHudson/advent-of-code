@@ -1,5 +1,5 @@
 importScripts('baseWorker.js');
-onmessage = onmessagefunc(6, 'Signals and Noise', (input) => {
+onmessage = onmessagefunc(6, 'Signals and Noise', (input, callback) => {
 	let result = [ null, null ];
 	
 	let lines = input.split('\n');
@@ -28,5 +28,5 @@ onmessage = onmessagefunc(6, 'Signals and Noise', (input) => {
 	result[0] = getWord(positions, (a, b) => Math.sign(b[1] - a[1]));
 	result[1] = getWord(positions, (a, b) => Math.sign(a[1] - b[1]));
 	
-	return result;
+	callback(result);
 });

@@ -1,6 +1,6 @@
 importScripts('baseWorker.js');
 importScripts('https://cdnjs.cloudflare.com/ajax/libs/spark-md5/3.0.0/spark-md5.min.js');
-onmessage = onmessagefunc(5, 'How About a Nice Game of Chess?', (input) => {
+onmessage = onmessagefunc(5, 'How About a Nice Game of Chess?', (input, callback) => {
 	let result = [ '', '--------' ];
 	
 	const replaceCharAtIndex = (str, i, c) => str.substr(0, i) + c + str.substr(i + 1, 8);
@@ -33,5 +33,5 @@ onmessage = onmessagefunc(5, 'How About a Nice Game of Chess?', (input) => {
 		}
 	}
 	
-	return result;
+	callback(result);
 });

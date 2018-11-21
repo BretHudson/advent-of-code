@@ -1,5 +1,5 @@
 importScripts('baseWorker.js');
-onmessage = onmessagefunc(4, 'Security Through Obscurity', (input) => {
+onmessage = onmessagefunc(4, 'Security Through Obscurity', (input, callback) => {
 	let result = [ 0, null ];
 	
 	let partsRegex = /([a-z\-]+)\-(\d+)\[(\w{5})\]/;
@@ -34,5 +34,5 @@ onmessage = onmessagefunc(4, 'Security Through Obscurity', (input) => {
 			result[0] += room;
 	});
 	
-	return result;
+	callback(result);
 });

@@ -1,5 +1,5 @@
 importScripts('baseWorker.js');
-onmessage = onmessagefunc(3, 'Squares With Three Sides', (input) => {
+onmessage = onmessagefunc(3, 'Squares With Three Sides', (input, callback) => {
 	let result = [ 0, null ];
 	
 	const regex = /(\d+)/g;
@@ -23,5 +23,5 @@ onmessage = onmessagefunc(3, 'Squares With Three Sides', (input) => {
 		result[0] += valid(lengths.sort(ascSort));
 	});
 	
-	return result;
+	callback(result);
 });
