@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Bret Hudson's Advent of Code 2016</title>
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+	<link href="https://fonts.googleapis.com/css?family=Indie+Flower|Special+Elite" rel="stylesheet">
+
+	<link rel="stylesheet" type="text/css" href="./css/styles.css">
+	
+	<script src="./js/blueprint.js"></script>
+	<script src="./js/main.js"></script>
+</head>
+<body>
+	<div class="container">
+		<h2>Bret Hudson presents</h2>
+		
+		<div id="day-holder-wrapper">
+			<div id="day-holder"></div>
+		</div>
+		
+		<h1>Advent of Code 2016</h1>
+		
+		<div id="envelope-wrapper">
+			<svg class="svg-bottom" width="90%" viewBox="0 0 500 600" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+				<defs>
+					<clipPath id="envelope-clip">
+						<rect x="0" y="0" width="500" height="300" />
+					</clipPath>
+				</defs>
+				<g transform="translate(0,150)" clip-path="url(#envelope-clip)">
+					<rect width="500" height="300" />
+				</g>
+				<g class="flap">
+					<polygon points="0,150 250,300 500,150" />
+					
+					<g class="diagonals" transform="translate(0, 150)">
+						<line class="w" x1="0" y1="2.5" x2="500" y2="2.5" />
+						<line class="w" x1="0" y1="2.5" x2="250" y2="150" />
+						<line class="w" x1="250" y1="150" x2="500" y2="2.5" />
+					</g>
+				</g>
+			</svg>
+			
+			<div class="paper"></div>
+			
+			<svg class="svg-top" width="90%" viewBox="0 0 500 600" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+				<g transform="translate(0,150)" clip-path="url(#envelope-clip)">
+					<polygon class="w" points="0,0 250,150 500,0 500,300 0,300" />
+					<g>
+						<line class="w" x1="0" y1="297.5" x2="500" y2="297.5" />
+						<line class="w" x1="2.5" y1="0" x2="2.5" y2="300" />
+						<line class="w" x1="497.5" y1="0" x2="497.5" y2="300" />
+					</g>
+					<g class="diagonals">
+						<line class="w" x1="0" y1="2.5" x2="250" y2="150" />
+						<line class="w" x1="250" y1="150" x2="500" y2="2.5" />
+					</g>
+				</g>
+				<g class="flap fade">
+					<polygon points="0,150 250,300 500,150" />
+					<g class="diagonals" transform="translate(0, 150)">
+						<line class="w" x1="0" y1="2.5" x2="500" y2="2.5" />
+						<line class="w" x1="0" y1="2.5" x2="250" y2="150" />
+						<line class="w" x1="250" y1="150" x2="500" y2="2.5" />
+					</g>
+				</g>
+			</svg>
+		</div>
+		
+		<div id="letter">
+			<div class="top">
+				<div class="front">
+					<div class="content">
+						<div class="title" data-day="19"></div>
+						<div class="subtitle" data-subtitle="Medicine for Rudolph"></div>
+						<a href="" target="_BLANK" class="view-source">View Source on GitHub</a>
+					</div>
+				</div>
+				<div class="back"></div>
+			</div>
+			<div class="middle">
+				<div class="front">
+					<div class="content">
+						<div class="title">Input</div>
+						<textarea id="puzzle-input"></textarea>
+						<button onclick="sendInput();">Submit</button>
+					</div>
+				</div>
+			</div>
+			<div class="bottom">
+				<div class="front">
+					<div class="content">
+						<div class="title">Results</div>
+						<div class="loading-anim"><span><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></span></div>
+						<label for="result-1">Part 1</label>
+						<input id="result-1" type="text" >
+						<label for="result-2">Part 2</label>
+						<input id="result-2" type="text" >
+					</div>
+				</div>
+				<div class="back"></div>
+			</div>
+		</div>
+	</div>
+	
+	<div id="overlay"></div>
+</body>
+</html>
