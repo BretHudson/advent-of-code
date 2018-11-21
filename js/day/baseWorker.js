@@ -15,7 +15,8 @@ let onmessagefunc = (day, subtitle, func) => {
 				let result = func(e.data.input);
 				postMessage({
 					msg: 'result',
-					result: result
+					result: result,
+					finished: true
 				});
 			} break;
 		}

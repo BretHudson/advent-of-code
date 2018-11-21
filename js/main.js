@@ -63,7 +63,8 @@ let openWorker = (id) => {
 				let result = e.data.result;
 				document.getElementById('result-1').value = result[0];
 				document.getElementById('result-2').value = result[1];
-				playLoading(false);
+				if (e.data.finished !== undefined)
+					playLoading(false);
 			} break;
 		};
 	};
