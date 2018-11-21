@@ -185,15 +185,18 @@ let showLetter = () => {
 	
 	playLoading(false);
 	
-	letter.querySelector('#puzzle-input').value = '';
-	letter.querySelector('#result-1').value = '';
-	letter.querySelector('#result-2').value = '';
-	
 	letter.className = 'show';
 };
 
 let close = () => {
+	closeWorker();
+	
 	setOverlay('');
+	
+	letter.querySelector('#puzzle-input').value = '';
+	letter.querySelector('#result-1').value = '';
+	letter.querySelector('#result-2').value = '';
+	
 	letter.className = '';
 	curState = STATE.BROWSE;
 	curDay = null;
