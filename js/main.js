@@ -1,4 +1,4 @@
-const NUM_DAYS = 11;
+const NUM_DAYS = 12;
 
 Math.clamp = (val, min, max) => {
 	return Math.min(Math.max(val, min), max);
@@ -63,7 +63,7 @@ let openWorker = (id) => {
 				let result = e.data.result;
 				document.getElementById('result-1').value = result[0];
 				document.getElementById('result-2').value = result[1];
-				if (e.data.finished !== undefined)
+				if (e.data.finished)
 					playLoading(false);
 			} break;
 		};
