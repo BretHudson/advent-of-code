@@ -324,13 +324,14 @@ window.addEventListener('resize', (e) => {
 });
 
 window.addEventListener('wheel', (e) => {
+	let amount = e.deltaY;
 	switch (curState) {
 		case STATE.BROWSE: {
-			dayHolder.scrollBy(e.deltaY, 0);
+			dayHolder.scrollBy(amount, 0);
 		} break;
 		
 		case STATE.LETTER: {
-			let dir = -Math.sign(e.wheelDeltaY);
+			let dir = Math.sign(amount);
 			scrollLetter(dir);
 		} break;
 	}
