@@ -83,6 +83,20 @@ h1 {
     top: 90%;
   }
 }
+#years {
+  font-weight: bold;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+}
+#years a {
+  color: #74d680;
+  color: #f8b229;
+}
+#years a:hover {
+  color: #74d3bf;
+}
 .cursive {
   font-family: 'Charmonman', cursive;
 }

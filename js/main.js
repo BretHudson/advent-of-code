@@ -287,6 +287,15 @@ document.addEventListener('DOMContentLoaded', (e) => {
 	overlay = document.getElementById('overlay');
 	dayHolder = document.getElementById("day-holder");
 	
+	years = document.getElementById('years');
+	let yearsStr = '';
+	let maxYear = (new Date(Date.now() + 30 * 8.64e7)).getFullYear() - 1;
+	for (var year = 2015; year <= maxYear; ++year) {
+		if (year === 2016) continue;
+		yearsStr += '<a href="https://brethudson.github.io/AdventOfCode' + year + '/">' + year + '</a> - ';
+	}
+	years.innerHTML = yearsStr.substring(0, yearsStr.length - 3);
+	
 	overlay.addEventListener('click', (e) => {
 		if (curState === STATE.LETTER) {
 			close();
