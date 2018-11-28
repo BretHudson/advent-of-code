@@ -79,3 +79,35 @@ Solution = function(id, div) {
 	this.div.parentNode.insertBefore(h2, this.div);
 	this.div.parentNode.appendChild(h4);
 }
+
+function iframeContained() {
+	try {
+		return window.self !== window.top;
+	} catch (e) {
+		return true;
+	}
+}
+
+document.addEventListener('DOMContentLoaded', function(e) {
+	if (!iframeContained()) {
+		var maxYear = (new Date(Date.now() + 30 * 8.64e7)).getFullYear() - 1;
+		
+		var years = document.createElement('div');
+		years.className = 'years';
+		var yearsStr = 'Other Years: ';
+		for (var year = 2016; year <= maxYear; ++year)
+			yearsStr += ' <a href="https://brethudson.github.io/AdventOfCode' + year + '/">' + year + '</a>,';
+		years.innerHTML = yearsStr.substring(0, yearsStr.length - 1);
+		document.body.insertBefore(years, document.body.firstChild);
+		
+		var subtitle = document.createElement('div');
+		subtitle.className = 'subtitle';
+		subtitle.innerHTML = 'Solutions by <a href="https://brethudson.com">Bret Hudson</a>';
+		document.body.insertBefore(subtitle, document.body.firstChild);
+		
+		var title = document.createElement('h1');
+		title.className = 'title';
+		title.innerHTML = '<a href="./">Advent of Code 2015</a>';
+		document.body.insertBefore(title, document.body.firstChild);
+	}
+});
