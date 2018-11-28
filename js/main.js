@@ -69,7 +69,6 @@ let animateSnowflakes = (elapsed) => {
 	}
 	lastElapsed = elapsed;
 	if (animating === false) {
-		console.log('stop');
 		snowflakesElem.removeClass('animate');
 	}
 };
@@ -82,7 +81,6 @@ let showResults = (results) => {
 
 let finishAnim = () => {
 	document.q('#shake-button').disabled = wrap = false;
-	console.log('finish anim');
 };
 
 let changeDay = (day) => {
