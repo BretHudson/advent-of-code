@@ -92,6 +92,15 @@ let changeDay = (day) => {
 };
 
 document.on('DOMContentLoaded', (e) => {
+	// Year stuff
+	let yearsStr = '';
+	let maxYear = (new Date(Date.now() + 30 * 8.64e7)).getFullYear() - 1;
+	for (var year = 2015; year <= maxYear; ++year) {
+		if (year === 2017) continue;
+		yearsStr += '<a href="https://brethudson.github.io/AdventOfCode' + year + '/">' + year + '</a> - ';
+	}
+	document.q('#years').innerHTML = yearsStr.substring(0, yearsStr.length - 3);
+	
 	// Generate snowflakes
 	snowflakesElem = document.q('#snowflakes')
 	let dist = 6;
@@ -121,7 +130,7 @@ document.on('DOMContentLoaded', (e) => {
 			document.body.addClass('portrait');
 			document.body.removeClass('landscape');
 			width = window.innerWidth / 75;
-			height = window.innerHeight / 110;
+			height = window.innerHeight / 115;
 		}
 		
 		let size = Math.min(width, height);

@@ -424,3 +424,12 @@ body.portrait #snowglobe {
   font-size: 2em;
   text-transform: uppercase;
 }
+#snowglobe #years {
+  text-align: center;
+  padding: 0.5em 0;
+}
+#snowglobe #years a {
+  text-decoration: none;
+  font-size: 2em;
+  text-transform: uppercase;
+}
