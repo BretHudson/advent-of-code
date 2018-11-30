@@ -79,8 +79,14 @@ let showResults = (results) => {
 	document.q('#result-2').value = results[1];
 };
 
+let timeout = null;
 let finishAnim = () => {
-	document.q('#shake-button').disabled = wrap = false;
+	document.q('#shake-button').disabled = false;
+	if (timeout !== null) clearTimeout(timeout);
+	timeout = setTimeout(() => {
+		wrap = document.q('#shake-button').disabled;
+		timeout = null;
+	}, 1200);
 };
 
 let changeDay = (day) => {
