@@ -1,7 +1,7 @@
 const irandom = (n) => Math.floor(Math.random() * n);
 const choose = (...args) => args[irandom(args.length)];
 
-let daysCompleted = 16;
+let daysCompleted = 17;
 let worker = null;
 let openWorker = (id, input) => {
 	closeWorker();
