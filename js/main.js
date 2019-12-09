@@ -1,6 +1,6 @@
 const IS_TOUCH_DEVICE = !!(('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch);
 
-const daysCompleted = 0;
+const daysCompleted = 1;
 
 const minYear = 2015;
 const maxYear = (new Date(Date.now() + 30 * 8.64e7)).getFullYear() - 1;
