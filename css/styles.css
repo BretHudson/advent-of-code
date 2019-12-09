@@ -1,0 +1,240 @@
+html,
+body {
+  min-height: 100%;
+}
+html {
+  height: 100%;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  font-family: 'Bebas Neue', Helvetica, Ariel, sans-serif;
+}
+@media (max-width: 767.98px) {
+  html {
+    font-size: 12px;
+  }
+}
+@media (min-width: 768px) and (max-width: 991.98px) {
+  html {
+    font-size: 13px;
+  }
+}
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  html {
+    font-size: 14px;
+  }
+}
+@media (min-width: 1200px) {
+  html {
+    font-size: 16px;
+  }
+}
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #efeae0;
+  color: #323232;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0 1rem;
+  box-sizing: border-box;
+}
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #183f18;
+    color: #eaeaea;
+  }
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: 0;
+  padding: 0;
+}
+a {
+  color: #a99;
+  text-decoration: none;
+}
+@media (prefers-color-scheme: dark) {
+  a {
+    color: #a06060;
+  }
+}
+a:hover {
+  color: #c33;
+}
+input,
+textarea {
+  display: block;
+  box-sizing: border-box;
+  text-align: center;
+  outline: 0;
+  font-size: 1.5rem;
+  background-color: transparent;
+  padding: 1rem;
+  color: #323232;
+  overflow-y: hidden;
+}
+@media (prefers-color-scheme: dark) {
+  input,
+  textarea {
+    color: #eaeaea;
+  }
+}
+input[name=input],
+textarea[name=input] {
+  font-family: inherit;
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid #666;
+  height: 4rem;
+}
+input[name=input]::placeholder,
+textarea[name=input]::placeholder {
+  color: #a0a0a0;
+}
+input[name^="result"],
+textarea[name^="result"] {
+  font-family: 'Source Code Pro', monospace;
+  width: 100%;
+  border: 1px solid rgba(102,102,102,0.5);
+  transition: color 0.2s;
+}
+input[name^="result"]:not(.finished),
+textarea[name^="result"]:not(.finished) {
+  color: rgba(50,50,50,0);
+}
+@media (prefers-color-scheme: dark) {
+  input[name^="result"],
+  textarea[name^="result"] {
+    border: 1px solid rgba(205,205,205,0.5);
+  }
+}
+textarea {
+  resize: vertical;
+}
+header,
+footer {
+  flex: none;
+  box-sizing: border-box;
+  height: 10.1875rem;
+}
+header {
+  text-align: center;
+  padding: 1rem 0;
+}
+header h1,
+header h2 {
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+header h1 {
+  font-size: 4rem;
+  color: #666;
+}
+@media (prefers-color-scheme: dark) {
+  header h1 {
+    color: #cdcdcd;
+  }
+}
+header h2 {
+  font-size: 2.5rem;
+  color: #a0a0a0;
+}
+header hr {
+  margin: 1rem 0 0;
+  border: 0;
+  border-bottom: 1px solid #666;
+}
+@media (prefers-color-scheme: dark) {
+  header hr {
+    border-bottom: 1px solid #cdcdcd;
+  }
+}
+main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex: 1 0 auto;
+  text-align: center;
+  position: relative;
+  max-width: 470px;
+  margin: 3rem 0;
+}
+main .title {
+  font-size: 6rem;
+}
+main .title::before,
+main .title::after {
+  content: '•';
+}
+main .title::before {
+  padding-right: 0.5ch;
+}
+main .title::after {
+  padding-left: 0.5ch;
+}
+main .buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 2rem 0;
+}
+main .buttons .button {
+  user-select: none;
+  border: 1px solid #a0a0a0;
+  min-width: 1.5rem;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  margin: 0.25rem;
+}
+@media (prefers-color-scheme: dark) {
+  main .buttons .button {
+    color: #eaeaea;
+  }
+}
+main .buttons .button:hover {
+  background-color: #a0d0a0;
+  color: #eaeaea;
+}
+@media (prefers-color-scheme: dark) {
+  main .buttons .button:hover {
+    background-color: #c66;
+  }
+}
+main .results {
+  width: 100%;
+}
+main .results label {
+  display: block;
+  font-size: 1.5rem;
+}
+main .results input + label {
+  margin-top: 2rem;
+}
+main .results a {
+  display: block;
+  margin-top: 1rem;
+  font-size: 1.5rem;
+}
+footer {
+  display: flex;
+  max-width: 470px;
+  justify-content: center;
+  align-items: flex-end;
+  padding: 1rem 0;
+  color: #a0a0a0;
+  font-size: 1.5rem;
+}
+footer span + span::before {
+  content: '•';
+  margin: 0 1ch;
+}
