@@ -24,14 +24,10 @@ onmessage = e => {
 				intcodes[params[2]] = intcodes[params[0]] * intcodes[params[1]];
 			} break;
 			
-			case 99: {
+			default:
+				console.warn('Something went wrong!', opcode);
+			case 99:
 				return false;
-			} break;
-			
-			default: {
-				console.warn('uh, Bret?');
-				return false;
-			}
 		}
 		
 		position += 4;
