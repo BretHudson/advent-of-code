@@ -65,6 +65,7 @@ const execWorker = id => {
 const handleResult = result => {
 	 resultElems.forEach((e, i) => {
 	 	e.value = result[i];
+	 	e.parentElement.dataset.value = result[i];
 	 	e.classList.add('finished');
 	 });
 };
@@ -105,9 +106,13 @@ window.on('DOMContentLoaded', e => {
 		$new('.results')
 			.children(
 				$new('label').text('Result 1'),
-				$new('input.result[name=result1]'),
+				$new('.result').child(
+					$new('textarea[name=result1]').attr('rows', 1)
+				),
 				$new('label').text('Result 2'),
-				$new('input.result[name=result2]'),
+				$new('.result').child(
+					$new('textarea[name=result2]').attr('rows', 1)
+				),
 				$new('a#source')
 					.attr('href', 'https://github.com/BretHudson/AdventOfCode2019')
 					.attr('target', '_blank')

@@ -1,5 +1,4 @@
 $white = #eaeaea
-$red = #E33
 $border = 7px
 
 html, body
@@ -33,7 +32,7 @@ body
 	box-sizing: border-box
 	@media (prefers-color-scheme: dark)
 		background-color: #183f18
-		color: #eaeaea
+		color: $white
 
 h1, h2, h3, h4, h5, h6, p
 	margin: 0
@@ -47,7 +46,8 @@ a
 	&:hover
 		color: #C33
 
-input, textarea
+textarea
+.result::after
 	display: block
 	box-sizing: border-box
 	text-align: center
@@ -58,27 +58,45 @@ input, textarea
 	color: #323232
 	overflow-y: hidden
 	@media (prefers-color-scheme: dark)
-		color: #eaeaea
+		color: $white
+
+textarea
 	&[name=input]
 		font-family: inherit
 		width: 100%
 		border: 0
 		border-bottom: 1px solid #666
 		height: 4rem
+		resize: vertical
 		&::placeholder
 			color: #a0a0a0
 	&[name^="result"]
+	/.result::after
 		font-family: 'Source Code Pro', monospace
 		width: 100%
 		border: 1px solid rgba(#666, 0.5)
 		transition: color 0.2s
+		padding: 1.5rem 1rem
 		&:not(.finished)
 			color: rgba(#323232, 0)
 		@media (prefers-color-scheme: dark)
 			border: 1px solid rgba(#cdcdcd, 0.5)
 
+.result
+	display: grid
+	align-items: stretch
+	position: relative
+	textarea
+	&::after
+		grid-area: 1 / 1
+	&::after
+		content: attr(data-value)
+		visibility: hidden
+		white-space: pre-wrap
+		border: 1px solid transparent
+
 textarea
-	resize: vertical
+	resize: none
 
 header, footer
 	flex: none
@@ -138,24 +156,24 @@ main
 			transition: background-color 0.2s, color 0.2s
 			margin: 0.25rem
 			@media (prefers-color-scheme: dark)
-				color: #eaeaea
+				color: $white
 			&:hover
 				background-color: #a0d0a0
 				@media (prefers-color-scheme: dark)
 					background-color: #c66
-				color: #eaeaea
+				color: $white
 	.results
 		width: 100%
 		label
 			display: block
 			font-size: 1.5rem
-		input + label
+		.result + label
 			margin-top: 2rem
 		a
 			display: block
 			margin-top: 1rem
 			font-size: 1.5rem
-			
+
 footer
 	display: flex
 	max-width: 470px

@@ -35,7 +35,7 @@ onmessage = e => {
 	
 	result[1] = Array.from({ length: size[1] }, v => []).map((_, i) => {
 		return imageData.slice(i * size[0], (i + 1) * size[0]).join('');
-	}).join('<br />');
+	}).join('\n');
 	
 	sendResult();
 };
