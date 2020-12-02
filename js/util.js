@@ -47,3 +47,7 @@ Array.prototype.remove = function(val) {
 	const index = this.indexOf(val);
 	return (index > -1) ? this.splice(index, 1) : undefined;
 };
+
+Math.clamp = (v, min, max) => {
+	return Math.min(Math.max(v, min), max);
+};
