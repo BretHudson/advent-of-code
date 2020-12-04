@@ -35,17 +35,8 @@ Array.prototype.combinations = function(n) {
 	return _combinations(n, [...this]).map(arr => arr.map(i => this[i]));
 };
 
-Array.prototype.empty = function() {
-	this.splice(0, this.length);
-};
-
 Array.prototype.permutations = function() {
 	return _permutations(this);
-};
-
-Array.prototype.remove = function(val) {
-	const index = this.indexOf(val);
-	return (index > -1) ? this.splice(index, 1) : undefined;
 };
 
 Math.clamp = (v, min, max) => {
