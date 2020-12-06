@@ -14,6 +14,9 @@ const parseEventMessage = e => {
 	};
 };
 
+const reduceSum = (acc, val) => acc + val;
+const reduceProduct = (acc, val) => acc * val;
+
 const _combinations = (k, xs, prefix = []) => {
 	if (prefix.length === 0) xs = [...xs.keys()];
 	if (k === 0) return [prefix];
