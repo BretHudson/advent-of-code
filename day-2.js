@@ -1,26 +1,22 @@
-// which are possible if:
-// only 12 red cubes, 13 green cubes, and 14 blue cubes
-// 1, 2, 5 possible
-// 3 NOT possible -> red cubes exceeded
-// 4 NOT possible -> blue cubes exceed
-// answer: 8 (sum of ids)
-
+// returns an object of the type
+// { red?: number, green?: number, blue?: number }
 const parseHandful = (handful) => {
-	const regex = /(?<count>\d+) (?<color>\w+)/g;
-	const matches = [...handful.matchAll(regex)].map((m) => m.groups);
-	return matches.reduce((acc, { color, count }) => {
-		acc[color] = +count;
-		return acc;
-	}, {});
+	const matches = handful.matchAll(/(?<count>\d+) (?<color>\w+)/g);
+	return [...matches]
+		.map((m) => m.groups)
+		.reduce((acc, { color, count }) => {
+			acc[color] = +count;
+			return acc;
+		}, {});
 };
-
-const test1 = 'only 12 red cubes, 13 green cubes, and 14 blue cubes';
 
 export const solution = (input) => {
 	let answers = [null, null];
 
-	const testAmounts = parseHandful(test1);
-	console.table(testAmounts);
+	// Part 1
+	const testAmounts = parseHandful(
+		'only 12 red cubes, 13 green cubes, and 14 blue cubes',
+	);
 
 	const games = input
 		.split('\n')
@@ -28,42 +24,39 @@ export const solution = (input) => {
 		.map((line) => {
 			const [gameStr, handfulsStr] = line.split(':');
 
-			const id = +gameStr.match(/\d+/)[0];
-			const handfuls = handfulsStr.split(';').map(parseHandful);
-			// console.table(handfuls);
-
 			return {
-				id,
-				handfuls,
+				id: +gameStr.match(/\d+/)[0],
+				handfuls: handfulsStr.split(';').map(parseHandful),
 			};
 		});
 
-	const passingGames = games.filter(({ id, handfuls }) => {
-		// console.log(`game ${id}`);
-		return handfuls.every((handful, index) => {
-			const { red = 0, green = 0, blue = 0 } = handful;
-			// console.warn(`handful #${index}`);
-			// console.table(handful);
-			// console.log({
-			// 	red: red < testAmounts['red'],
-			// 	green: green < testAmounts['green'],
-			// 	blue: blue < testAmounts['blue'],
-			// });
-			return (
-				red <= testAmounts['red'] &&
-				green <= testAmounts['green'] &&
-				blue <= testAmounts['blue']
+	const passingGames = games.filter(({ handfuls }) => {
+		return handfuls.every((handful) => {
+			return Object.entries(handful).every(
+				([color, count]) => count <= testAmounts[color],
 			);
 		});
 	});
 
-	// console.table(games);
-	console.warn('passing games:');
-	console.table(passingGames);
-
 	answers[0] = passingGames.reduce((acc, { id }) => acc + id, 0);
 
-	answers[1] = JSON.stringify(testAmounts);
+	// Part 2
+	const powers = games.map(({ handfuls }) => {
+		const max = handfuls.reduce(
+			(acc, handful) => {
+				Object.keys(handful).forEach((key) => {
+					acc[key] = Math.max(acc[key], handful[key]);
+				});
+
+				return acc;
+			},
+			{ red: 0, green: 0, blue: 0 },
+		);
+
+		return Object.values(max).reduce((acc, val) => acc * val, 1);
+	});
+
+	answers[1] = powers.reduce((acc, val) => acc + val, 0);
 
 	return answers;
 };
