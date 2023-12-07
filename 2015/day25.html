@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Day 25: Let It Snow</title>
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+	<link href="https://fonts.googleapis.com/css?family=Exo+2:400,700" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="css/day.css" />
+	<script type="text/javascript" src="js/main.js"></script>
+	<script type="text/javascript">
+		function parseInput(input) {
+			 var result = {};
+			 
+			 var regex = /To continue, please consult the code grid in the manual.  Enter the code at row (\d+), column (\d+)./g;
+			 var match = regex.exec(input);
+			 
+			 result.row = parseInt(match[1], 10);
+			 result.col = parseInt(match[2], 10);
+			 
+			 return result;
+		}
+		
+		function insertIntoArray(arr, index, value) {
+			var diagonal = Math.floor((1 + Math.sqrt(1 + (8 * index) - 8)) / 2);
+			var start = diagonal * (diagonal - 1) / 2 + 1;
+			var offset = index - start;
+			var x = offset;
+			var y = (diagonal - 1) - offset;
+			
+			if (x === 0) arr[y] = [];
+			arr[y][x] = value;
+		}
+		
+		function getCodeAt(row, col) {
+			var arr = [ [ 20151125 ] ];
+			var lastValue = arr[0][0];
+			
+			var bigger = Math.max(row, col);
+			
+			var numEntries = (bigger * ((bigger * 2) - 1));
+			
+			const MULTI = 252533;
+			const DIVID = 33554393;
+			for (var i = 2; i <= numEntries; ++i) {
+				lastValue = lastValue * MULTI % DIVID;
+				insertIntoArray(arr, i, lastValue);
+			}
+			
+			return arr[row - 1][col - 1];
+		}
+		
+		function generateOutput() {
+			var puzzleInput = document.getElementById('puzzle-input').value;
+			var input = parseInput(puzzleInput);
+			
+			var code = getCodeAt(input.row, input.col);
+			document.getElementById('output1').value = code;
+		}
+	</script>
+</head>
+<body>
+	<div id="solution">
+		<label for="puzzle-input">Puzzle Input:</label>
+		<input type="text" id="puzzle-input" />
+		
+		<!-- Allow switching between file input and text input -->
+		
+		<button onClick="generateOutput();">Generate Output</button>
+		
+		<label for="output1">Code:</label>
+		<input type="text" id="output1" />
+	</div>
+	
+	<script type="text/javascript">
+		new Solution(25, 'solution');
+	</script>
+</body>
+</html>

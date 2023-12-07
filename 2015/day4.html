@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Day 4: The Ideal Stocking Stuffer</title>
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+	<link href="https://fonts.googleapis.com/css?family=Exo+2:400,700" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="css/day.css" />
+	<script type="text/javascript" src="js/main.js"></script>
+	<script type="text/javascript" src="libraries/md5.js"></script>
+	<script type="text/javascript">
+		function updateOutput(str) {
+			document.getElementById('output1').value = str;
+			document.getElementById('output2').value = str;
+		}
+		
+		var timeout;
+		
+		function computeShortestNumber(input, zeroes, output, iter, callback) {
+			var answer = '';
+			var answerIndex = 0;
+			
+			for (var i = 32768 * iter; i < 32768 * (iter + 1); ++i) {
+				answer = md5(input + String(i));
+				if (answer.substr(0, zeroes.length) === zeroes) {
+					answerIndex = i;
+				}
+			}
+			
+			var display = 'LOADING...'.substr(0, (++iter / 2) % 11);
+			
+			if (answerIndex == 0) {
+				timeout = setTimeout(function() {
+					computeShortestNumber(input, zeroes, output, iter, callback);
+				}, 3);
+			} else {
+				display = answerIndex;
+				
+				if (callback != null) {
+					callback();
+				}
+			}
+			
+			document.getElementById(output).value = display;
+		}
+		
+		function getShortestNumber(input, zeroes, output, callback) {
+			var comparison = '';
+			for (var z = 0; z < zeroes; ++z) {
+				comparison += '0';
+			}
+			
+			computeShortestNumber(input, comparison, output, 0, callback);
+		}
+		
+		function generateOutput() {
+			var puzzleInput = document.getElementById('puzzle-input').value;
+			
+			updateOutput('');
+			
+			clearTimeout(timeout);
+			
+			getShortestNumber(puzzleInput, 5, 'output1', function() {
+				getShortestNumber(puzzleInput, 6, 'output2', null);
+			});
+		}
+	</script>
+</head>
+<body>
+	<div id="solution">
+		<label for="puzzle-input">Puzzle Input:</label>
+		<input type="text" id="puzzle-input" />
+		
+		<button onClick="generateOutput();">Generate Output</button>
+		
+		<label style="font-style: italic; margin-bottom: 28px;">This one takes a minute...</label>
+		
+		<label for="output1">5 Zeroes:</label>
+		<input type="text" id="output1" />
+		
+		<label for="output2">6 Zeroes:</label>
+		<input type="text" id="output2" />
+	</div>
+	
+	<script type="text/javascript">
+		new Solution(4, 'solution');
+	</script>
+</body>
+</html>

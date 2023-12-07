@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Day 16: Aunt Sue</title>
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+	<link href="https://fonts.googleapis.com/css?family=Exo+2:400,700" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="css/day.css" />
+	<script type="text/javascript" src="js/main.js"></script>
+	<script type="text/javascript">
+		function parseSues(input, columns) {
+			var numColumns = columns.length;
+			
+			var sues = [];
+			for (var i = 0, n = input.length; i < n; ++i) {
+				var line = input[i];
+				var regex = /Sue (\d+):/g;
+				var match = regex.exec(line);
+				
+				var curSue = { number: parseInt(match[1], 10) };
+				
+				for (var c = 0; c < numColumns; ++c) {
+					var col = columns[c];
+					var str = col + ': (\\d+)';
+					var regex = new RegExp(str, 'g');
+					var match = regex.exec(line);
+					if (match !== null) {
+						curSue[col] = parseInt(match[1], 10);
+					}
+				}
+				
+				sues.push(curSue);
+			}
+			return sues;
+		}
+		
+		function filterSues(sues, columns, mySue, retroencabulator) {
+			var suesThatFitTheBill = [];
+			
+			var numColumns = columns.length;
+			
+			for (var s = 0, n = sues.length; s < n; ++s) {
+				var curSue = sues[s];
+				var keep = true;
+				for (var c = 0; c < numColumns; ++c) {
+					var curColumn = columns[c];
+					var curSueColumn = curSue[curColumn];
+					if (curSueColumn !== undefined) {
+						keep = retroencabulator(curColumn, curSueColumn, mySue[curColumn]);
+						if (keep === false)
+							break;
+					}
+				}
+				
+				if (keep === true)
+					suesThatFitTheBill.push(curSue);
+			}
+			
+			return suesThatFitTheBill;
+		}
+		
+		var oldRetroencabulator = function(col, curVal, testVal) {
+			return (curVal === testVal);
+		}
+		
+		var newRetroencabulator = function(col, curVal, testVal) {
+			switch (col) {
+				case 'cats':
+				case 'trees':
+					return (curVal > testVal);
+				
+				case 'pomeranians':
+				case 'goldfish':
+					return (curVal < testVal);
+				
+				default:
+					return (curVal === testVal);
+			}
+		};
+		
+		function generateOutput() {
+			var puzzleInput = document.getElementById('puzzle-input').value.split('\n');
+			
+			var columns = [ 'children', 'cats', 'samoyeds', 'pomeranians', 'akitas', 'vizslas', 'goldfish', 'trees', 'cars', 'perfumes' ];
+			
+			var mySue = {
+				children: 3,
+				cats: 7,
+				samoyeds: 2,
+				pomeranians: 3,
+				akitas: 0,
+				vizslas: 0,
+				goldfish: 5,
+				trees: 3,
+				cars: 2,
+				perfumes: 1
+			};
+			
+			sues = parseSues(puzzleInput, columns);
+			filteredSues = filterSues(sues, columns, mySue, oldRetroencabulator);
+			filteredSuesMRE = filterSues(sues, columns, mySue, newRetroencabulator);
+			
+			document.getElementById('output1').value = (filteredSues.length > 0) ? filteredSues[0].number : -1;
+			document.getElementById('output2').value = (filteredSues.length > 0) ? filteredSuesMRE[0].number : -1;
+		}
+	</script>
+</head>
+<body>
+	<div id="solution">
+		<label for="puzzle-input">Puzzle Input:</label>
+		<textarea id="puzzle-input" style="width: 400px; height: 150px;"></textarea>
+		
+		<button onClick="generateOutput();">Generate Output</button>
+		
+		<label for="output1">Old Retroencabulator Result:</label>
+		<input type="text" id="output1" />
+		
+		<label for="output2">New Retroencabulator Result:</label>
+		<input type="text" id="output2" />
+	</div>
+	
+	<script type="text/javascript">
+		new Solution(16, 'solution');
+	</script>
+</body>
+</html>

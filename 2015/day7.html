@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Day 7: Some Assembly Required</title>
+	<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+	<link href="https://fonts.googleapis.com/css?family=Exo+2:400,700" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="css/day.css" />
+	<script type="text/javascript" src="js/main.js"></script>
+	<script type="text/javascript">
+		function createWire(name, parents, gate) {
+			var wire = {};
+			wire.name = name;
+			
+			var numParents = parents.length;
+			for (var i = 0; i < numParents; ++i) {
+				// Turn strings to numbers
+				if (!isNaN(parents[i]))
+					parents[i] = parseInt(parents[i], 10);
+			}
+			
+			if (gate !== null)
+				wire.gate = gate;
+			
+			wire.value = null;
+			if ((gate === null) && (numParents === 1) && (!isNaN(parents[0]))) {
+				wire.value = parents[0];
+			}
+			
+			wire.parents = parents;
+			wire.defaultValue = wire.value;
+			wire.reset = true; // Set to false to preserve current value
+			
+			return wire;
+		}
+		
+		function resetWires(wires) {
+			for (var key in wires) {
+				if (wires[key].reset === true) {
+					wires[key].value = wires[key].defaultValue;
+				}
+			}
+		}
+		
+		function createGates(puzzleInput) {
+			var wires = new Array();
+			
+			var numInputs = puzzleInput.length;
+			for (var i = 0; i < numInputs; ++i) {
+				var regex = /([a-z]{1,2}|\d{1,5})? ?([A-Z]{1,6})? ?([a-z]{1,2}|\d{0,5}) -> ([a-z]{1,2})/g;
+				var instruction = regex.exec(puzzleInput[i]).slice(1);
+				
+				var name = instruction[3];
+				var lWire = instruction[0] || null;
+				var rWire = instruction[2] || null;
+				var gate = instruction[1] || null;
+				
+				if (lWire === null)
+					wires[name] = createWire(name, [ rWire ], gate);
+				else if (rWire === null)
+					wires[name] = createWire(name, [ lWire ], gate);
+				else 
+					wires[name] = createWire(name, [ lWire, rWire ], gate);
+			}
+			
+			return wires;
+		}
+		
+		function executeGates(wires) {
+			var stack = [];
+			for (var key in wires) {
+				if (wires[key].value === null)
+					stack.push(key);
+			}
+			
+			while (stack.length > 0) {
+				var wireName = stack.shift();
+				var wire = wires[wireName];
+				
+				// Figure out number of parents
+				var addToStack = false;
+				var numParents = wire.parents.length;
+				for (var i = 0; i < numParents; ++i) {
+					if (isNaN(wire.parents[i])) {
+						var parentName = wire.parents[i];
+						if (wires[parentName].value === null)
+							addToStack = true;
+					}
+				}
+				
+				if (addToStack) {
+					stack.push(wireName);
+					continue;
+				}
+				
+				lWire = wire.parents[0];
+				if (isNaN(lWire)) lWire = wires[lWire].value;
+				rWire = (numParents === 2) ? wire.parents[1] : null;
+				if (isNaN(rWire)) rWire = wires[rWire].value;
+				
+				switch (String(wire.gate)) {
+					case 'AND': {
+						wire.value = (lWire & rWire) >>> 0;
+					} break;
+					
+					case 'OR': {
+						wire.value = (lWire | rWire) >>> 0;
+					} break;
+					
+					case 'LSHIFT': {
+						wire.value = (lWire << rWire) >>> 0;
+					} break;
+					
+					case 'RSHIFT': {
+						wire.value = (lWire >>> rWire) >>> 0;
+					} break;
+					
+					case 'NOT': {
+						wire.value = (~lWire) >>> 0;
+					} break;
+					
+					// Case for when a wire is directly connected to another wire
+					default: {
+						wire.value = lWire;
+					} break;
+				}
+				
+				wire.value &= 0xFFFF; // Make sure it's only 16 bits!
+			}
+			
+			var values = 0;
+			for (var key in wires) {
+				//console.log(key, ': ', wires[key].value);
+				if (wires[key].value !== null) ++values;
+			}
+		}
+		
+		function generateOutput() {
+			var puzzleInput = document.getElementById('puzzle-input').value.split('\n');
+			
+			var wires = createGates(puzzleInput);
+			executeGates(wires);
+			
+			document.getElementById('output1').value = wires['a'].value;
+			
+			wires['b'].value = wires['a'].value;
+			wires['b'].reset = false;
+			
+			resetWires(wires);
+			executeGates(wires);
+			
+			document.getElementById('output2').value = wires['a'].value;
+		}
+	</script>
+</head>
+<body>
+	<div id="solution">
+		<label for="puzzle-input">Puzzle Input:</label>
+		<textarea id="puzzle-input" style="width: 400px; height: 150px;"></textarea>
+		
+		<button onClick="generateOutput();">Generate Output</button>
+		
+		<label for="output1">Wire a, pass one:</label>
+		<input type="text" id="output1" />
+		
+		<label for="output2">Wire a, pass two:</label>
+		<input type="text" id="output2" />
+	</div>
+	
+	<script type="text/javascript">
+		new Solution(7, 'solution');
+	</script>
+</body>
+</html>
