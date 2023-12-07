@@ -1,0 +1,316 @@
+c_black = #000
+c_white = #fff
+
+c_blue = #06f
+c_green = #090
+c_yellow = #ff6
+c_orange = #f90
+c_red = #f00
+
+c_text = #ccc
+c_bg = #0f0f23
+c_gray = #666
+
+c_globe_tint = #999FFF
+c_snow = #fffafa
+c_house = #AE8A58
+c_trunk = #54330c
+
+c_christmas_green = c_green
+c_christmas_red = #d42426
+
+base_font = 'Fredoka One', 'Source Code Pro', monospace
+monospace_font = 'Source Code Pro', monospace
+
+*, *:before, *:after
+	box-sizing: border-box
+
+html
+	font: base_font
+	font-size: 14pt
+
+body
+	margin: 0
+	background-color: c_bg
+	color: c_text
+	overflow: none
+	font-size: 0 // NOTE(bret): Set to 0 so we don't get any odd zooming on mobile on page load (trust me here, remove it and watch everything fall apart)
+	font-family: base_font
+	/*&.width
+		background-color: c_green
+	&.height
+		background-color: c_blue*/
+	&::before
+		content: ''
+		position: absolute
+		left: 0
+		top: 0
+		background-color: c_christmas_green
+	&.landscape::before
+		width: 50%
+		height: 100%
+	&.portrait::before
+		width: 100%
+		height: 0
+
+a
+	color: c_text
+	&:hover
+		color: white
+
+button
+	position: absolute
+	left: 1.5em
+	top: 1.5em
+	font-size: 1em
+	width: 9em
+	height: 9em
+	border-radius: 100%
+	cursor: default
+	border: 0.5em solid #FAFAFA
+	user-select: none
+	font-family: base_font
+	span
+		pointer-events: none
+		position: absolute
+		left: 50%
+		top: 50%
+		transform: translate(-50%, calc(-50% - 0.5em))
+		font-size: 2.0em
+		z-index: 1
+		transition: transform 0.1s
+		color: #FAFAFA
+		^[0]:active ^[1..-1]
+			transform: translate(-50%, -50%)
+	&::before
+		content: ''
+		position: absolute
+		width: 100%
+		height: 100%
+		left: 0
+		top: 0
+		transition: background-color 0.17s
+		background-color: #B66
+		border-radius: 100%
+	&::after
+		content: ''
+		position: absolute
+		width: 100%
+		height: 100%
+		left: 0
+		top: 0
+		background-color: #E88
+		border-radius: 100%
+		font-size: 2em
+		transform: translateY(-0.5em)
+		transition: transform 0.1s, background-color 0.17s
+	&:active::after
+		transform: translateY(0)
+	&:hover, &:active
+		&::before
+			background-color: #6B6
+		&::after
+			background-color: #8E8
+	&:disabled
+		span
+			transform: translate(-50%, -50%)
+		&::before
+			background-color: #666
+		&::after
+			background-color: #888
+			transform: translateY(0)
+
+header
+	position: absolute
+	font-size: 3.0em
+	text-align: center
+	padding: 1.0em 0
+	width: 100%
+	background-color: c_christmas_green
+	h1, h2
+		margin: 0
+		font-weight: 400
+	h1
+		font-size: 2em
+		opacity: 0.8
+	h2
+		line-height: 1.0em
+		opacity: 0.5
+		font-size: 1.5em
+		a
+			text-decoration: none
+	select, textarea
+		display: block
+		margin: 1em auto 0
+		font-size: 0.75em
+		width: 23em
+		max-width: 90%
+		padding: 0.5em
+		opacity: 0.8
+	textarea
+		height: 5.25em
+		font-family: monospace_font
+	body.landscape &
+		max-width: 90%
+		left: 25%
+		top: 50%
+		transform: translate(-50%, -50%)
+		max-width: 45%
+	body.portrait &
+		left: 50%
+		transform: translateX(-50%)
+
+snowGlobeItem(width, height, left, top)
+	position: relative
+	width: width
+	height: height
+	margin-bottom: '-%s' % height
+	left: left
+	top: top
+
+#snowglobe
+	position: absolute
+	left: 50%
+	transform: translateX(-50%)
+	body.landscape &
+		left: 75%
+		top: 50%
+		transform: translate(-50%, -50%)
+		max-width: 45%
+	body.portrait &
+		left: 50%
+		transform: translateX(-50%)
+		bottom: 5em
+	.ball
+		position: relative
+		width: 50em
+		height: 50em
+		border-radius: 100%
+		overflow: hidden
+		background-color: c_bg
+		&::after
+			content: ''
+			position: absolute
+			left: 0
+			top: 0
+			right: 0
+			bottom: 0
+			border-radius: 100%
+			border: 1.5em solid #cdcdcd
+		.snow
+			snowGlobeItem(50em, 15em, 0, 35em)
+			background-color: c_snow
+			opacity: 1
+			border-radius: 100%
+		.tree
+			snowGlobeItem(0, 0, 11em, 19em)
+			background-color: c_green
+			transform: rotate(-5deg)
+			transform-origin: 6.2em 17.4em
+			.branch
+				position: relative
+				z-index: 1
+			for i in 1 2 3 4 5
+				.branch:nth-child({i})
+					border-left: '%sem solid%s' % ((i * 8 + 22) / 10) transparent
+					border-right: '%sem solid%s' % ((i * 8 + 22) / 10) transparent
+					border-bottom: '%sem solid%s' % ((i * 8 + 22) / 10) c_green
+					left: '%sem' % (((5 - i) * 8) / 10)
+					margin-bottom: '-%sem' % ((i * 5 + 5) / 10)
+				.branch:nth-child({i})::before
+					content: ''
+					position: absolute
+					width: '%sem' % ((i * 8 + 22) / 5)
+					height: 6px
+					top: '%sem' % ((i * 8 + 22) / 10)
+					transform: translateX(-50%)
+					margin-top: -1px
+					opacity: 0.7
+					background-color: c_green
+			&::after
+				content: ''
+				position: absolute
+				width: 3em
+				height: 3em
+				left: 4.7em
+				margin-top: 3em
+				background-color: c_trunk
+		.snowperson
+			snowGlobeItem(0, 0, 27em, 24em)
+			transform: rotate(3deg)
+			transform-origin: 4.5em 11em
+			.top, .bottom
+				position: relative
+				background-color: rgba(black, 0.2)
+				border-radius: 100%
+				div
+					width: 100%
+					height: 100%
+					background: radial-gradient(circle at 50% 20%, rgba(c_snow), rgba(c_snow) 75%, rgba(c_snow, 0.5) 75%, rgba(c_snow, 0.5))
+					margin-top: -2em
+					border-radius: 100%
+			.top
+				width: 6.5em
+				height: 6.5em
+				left: 1.25em
+				z-index: 1
+			.bottom
+				width: 9em
+				height: 9em
+				margin-top: -2.0em
+		#snowflakes
+			snowGlobeItem(100%, 100%, 0, 0)
+			transform: translate(50%, 50%)
+			opacity: 0
+			transition: opacity 0.5s
+			&.animate
+				opacity: 0.5
+			.snowflake
+				position: absolute
+				background-color: c_snow
+				transform: translate(-50%, -50%) rotate(45deg)
+				//border-radius: 100%
+		.tint, .shine
+			snowGlobeItem(50em, 50em, 0, 0)
+			z-index: 999
+		.tint
+			background: radial-gradient(rgba(c_globe_tint, 0.2) 45%, rgba(c_globe_tint, 0.6))
+		.shine
+			background: radial-gradient(ellipse at 70% 30%, rgba(c_globe_tint, 0.5) 0, transparent 45%)
+			mix-blend-mode: multiply
+	.base
+		//display: none
+		position: relative
+		z-index: 1000
+		margin-top: -9em
+		width: 50em
+		height: 15em
+		background-color: #666
+		border: 1.5em solid #cdcdcd
+		padding: 1.5em
+		input[type=text]
+			display: block
+			width: calc(100% - 5.25em)
+			margin-left: 5.25em
+			font-size: 2em
+			height: 1.875em
+			margin-bottom: 0.75em
+			padding: 0 0.25em
+			font-family: monospace_font
+			background-color: c_bg
+			color: white
+			text-align: center
+			outline: none
+	#source
+		text-align: center
+		padding: 0.5em 0
+		a
+			font-size: 2em
+			text-transform: uppercase
+	#years
+		text-align: center
+		padding: 0.5em 0
+		a
+			text-decoration: none
+			font-size: 2em
+			text-transform: uppercase
