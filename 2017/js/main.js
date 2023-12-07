@@ -15,7 +15,7 @@ let openWorker = (id, input) => {
 	};
 	worker.postMessage({
 		msg: 'execute',
-		input: input
+		input: input,
 	});
 };
 
@@ -30,16 +30,16 @@ let snowflakes = [];
 let numSnowflakes = 0;
 let snowflakesElem;
 let addSnowflake = (x, y) => {
-	let size = (Math.random() * 0.5) + 0.75;
+	let size = Math.random() * 0.5 + 0.75;
 	let element = $new('.snowflake').element();
 	element.style.width = size + 'em';
 	element.style.height = size + 'em';
 	snowflakesElem.append(element);
 	let snowflake = {
 		element: element,
-		x: (x + (Math.random() * 7) - 3.5),
-		y: (y + (Math.random() * 7) - 3.5),
-		t: ((size - 0.75) * 0.8) + 0.7
+		x: x + Math.random() * 7 - 3.5,
+		y: y + Math.random() * 7 - 3.5,
+		t: (size - 0.75) * 0.8 + 0.7,
 	};
 	snowflakes.push(snowflake);
 	++numSnowflakes;
@@ -56,15 +56,14 @@ let animateSnowflakes = (elapsed) => {
 		snowflake = snowflakes[s];
 		snowflake.y += (elapsed - lastElapsed) * 0.012 * snowflake.t;
 		if (wrap === true) {
-			while (snowflake.y >= 50)
-				snowflake.y -= 100;
+			while (snowflake.y >= 50) snowflake.y -= 100;
 		} else {
-			if (snowflake.y < 50)
-				animating = true;
+			if (snowflake.y < 50) animating = true;
 		}
 		let scaleX = (snowflake.y + 10) * 0.013;
-		scaleX = 0.96 - (scaleX * scaleX);
-		snowflake.element.style.left = snowflake.x * snowflakeScale * scaleX + 'px';
+		scaleX = 0.96 - scaleX * scaleX;
+		snowflake.element.style.left =
+			snowflake.x * snowflakeScale * scaleX + 'px';
 		snowflake.element.style.top = snowflake.y * snowflakeScale + 'px';
 	}
 	lastElapsed = elapsed;
@@ -74,7 +73,7 @@ let animateSnowflakes = (elapsed) => {
 };
 
 let showResults = (results) => {
-	results = results || [ 'Please wait...', 'Results are loading...' ];
+	results = results || ['Please wait...', 'Results are loading...'];
 	document.q('#result-1').value = results[0];
 	document.q('#result-2').value = results[1];
 };
@@ -90,40 +89,40 @@ let finishAnim = () => {
 };
 
 let changeDay = (day) => {
-	let href = 'https://github.com/BretHudson/AdventOfCode2017/blob/master/js/day/' + day + '.js';
+	let href =
+		'https://github.com/BretHudson/advent-of-code/blob/main/2017/js/day/' +
+		day +
+		'.js';
 	let anchor = document.q('#source a');
 	anchor.textContent = 'View Day ' + day + ' Source';
 	anchor.setAttribute('href', href);
-	showResults([ '', '' ]);
+	showResults(['', '']);
 };
 
 document.on('DOMContentLoaded', (e) => {
 	// Year stuff
 	let yearsStr = '';
-	let maxYear = (new Date(Date.now() + 30 * 8.64e7)).getFullYear() - 1;
+	let maxYear = new Date(Date.now() + 30 * 8.64e7).getFullYear() - 1;
 	for (var year = 2015; year <= maxYear; ++year) {
 		if (year === 2017) continue;
-		yearsStr += '<a href="https://brethudson.github.io/AdventOfCode' + year + '/">' + year + '</a> - ';
+		yearsStr += '<a href="../' + year + '/">' + year + '</a> - ';
 	}
 	document.q('#years').innerHTML = yearsStr.substring(0, yearsStr.length - 3);
-	
+
 	// Generate snowflakes
-	snowflakesElem = document.q('#snowflakes')
+	snowflakesElem = document.q('#snowflakes');
 	let dist = 6;
 	let inc = dist * 2;
 	let limit = dist;
-	while (limit + dist <= 50)
-		limit += dist;
+	while (limit + dist <= 50) limit += dist;
 	let iter = 0;
 	for (let y = -limit; y < limit; y += inc, ++iter) {
 		for (let x = -45; x < 45; x += inc) {
-			if (iter % 2 === 1)
-				addSnowflake(x * -1, y);
-			else
-				addSnowflake(x, y);
+			if (iter % 2 === 1) addSnowflake(x * -1, y);
+			else addSnowflake(x, y);
 		}
 	}
-	
+
 	let resize = () => {
 		let width, height;
 		let ratio = window.innerWidth / window.innerHeight;
@@ -138,7 +137,7 @@ document.on('DOMContentLoaded', (e) => {
 			width = window.innerWidth / 75;
 			height = window.innerHeight / 115;
 		}
-		
+
 		let size = Math.min(width, height);
 		if (size === width) {
 			document.body.addClass('width');
@@ -147,25 +146,29 @@ document.on('DOMContentLoaded', (e) => {
 			document.body.addClass('height');
 			document.body.removeClass('width');
 		}
-		
+
 		document.body.style.fontSize = `${size}px`;
 		let globe = document.q('#snowglobe');
 		snowflakeScale = 0.01 * globe.getBoundingClientRect().width;
 	};
-	
+
 	window.on('resize', resize);
 	resize();
-	
+
 	let daySelect = document.q('#day-select');
 	for (let day = 1; day <= daysCompleted; ++day) {
-		daySelect.append($new('option.day').text('Day ' + day).attr('value', day));
+		daySelect.append(
+			$new('option.day')
+				.text('Day ' + day)
+				.attr('value', day),
+		);
 	}
-	daySelect.on('change', e => {
+	daySelect.on('change', (e) => {
 		changeDay(e.target.value);
 	});
 	changeDay(1);
-	
-	document.q('#shake-button').on('click', e => {
+
+	document.q('#shake-button').on('click', (e) => {
 		e.target.disabled = wrap = true;
 		window.requestAnimationFrame(() => {
 			snowflakesElem.addClass('animate');
@@ -173,6 +176,6 @@ document.on('DOMContentLoaded', (e) => {
 		showResults();
 		openWorker(daySelect.value, document.q('#input').value);
 	});
-	
+
 	window.requestAnimationFrame(animateSnowflakes);
 });

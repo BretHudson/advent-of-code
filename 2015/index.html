@@ -1,44 +1,64 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<meta charset="utf-8">
-	<title>Bret Hudson's Advent of Code 2015</title>
-	<meta name="viewport" content="width=device-width,user-scalable=no,minimum-scale=1.0,maximum-scale=1.0,initial-scale=1.0" />
-	<meta property="og:title" content="Bret Hudson's Advent of Code 2015">
-	<meta property="og:description" content="Solutions to Advent of Code 2015 (adventofcode.com) in JavaScript by Bret Hudson">
-	<meta property="og:type" content="website">
-	<meta property="og:url" content="https://brethudson.github.io/AdventOfCode2015/">
-	<meta property="og:image" content="https://brethudson.github.io/AdventOfCode2015/img/preview.png">
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:site" content="BretHudson" />
-	<meta name="twitter:creator" content="BretHudson" />
-	<meta name="twitter:title" content="Bret Hudson's Advent of Code 2015" />
-	<meta name="twitter:description" content="Solutions to Advent of Code 2015 (adventofcode.com) in JavaScript by Bret Hudson" />
-	<meta name="twitter:image:src" content="https://brethudson.github.io/AdventOfCode2015/img/preview.png" />
-	<meta name="twitter:url" content="https://brethudson.github.io/AdventOfCode2015/" />
-	<meta name="theme-color" content="#F44336">
-	<link href="https://fonts.googleapis.com/css?family=Exo+2:400,700" rel="stylesheet">
-	<link rel="stylesheet" type="text/css" href="css/styles.css">
-	<link rel="stylesheet" type="text/css" href="css/grid.css">
-	<!--
-		TODO(bret):
-			- Calculate height of iframe
-			- Fade in effect for each day
-			- Maybe create iframes w/ JS?
-			- JS formatting for each day page
-	-->
-	<script type="text/javascript" src="js/main.js"></script>
-</head>
-<body>
-	<div class="container">
-		<div id="day-container" class="row">
-			<script type="text/javascript">
-				addMetaTags();
-				for (var day = 1; day <= 25; ++day) {
-					new SolutionFrame(day);
-				}
-			</script>
+	<head>
+		<meta charset="utf-8" />
+		<title>Bret Hudson's Advent of Code 2015</title>
+		<meta
+			name="viewport"
+			content="width=device-width,user-scalable=no,minimum-scale=1.0,maximum-scale=1.0,initial-scale=1.0"
+		/>
+		<meta property="og:title" content="Bret Hudson's Advent of Code 2015" />
+		<meta
+			property="og:description"
+			content="Solutions to Advent of Code 2015 (adventofcode.com) in JavaScript by Bret Hudson"
+		/>
+		<meta property="og:type" content="website" />
+		<meta
+			property="og:url"
+			content="https://advent-of-code.brethudson.com/2015/"
+		/>
+		<meta
+			property="og:image"
+			content="https://advent-of-code.brethudson.com/2015/img/preview.png"
+		/>
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:site" content="BretHudson" />
+		<meta name="twitter:creator" content="BretHudson" />
+		<meta
+			name="twitter:title"
+			content="Bret Hudson's Advent of Code 2015"
+		/>
+		<meta
+			name="twitter:description"
+			content="Solutions to Advent of Code 2015 (adventofcode.com) in JavaScript by Bret Hudson"
+		/>
+		<meta
+			name="twitter:image:src"
+			content="https://advent-of-code.brethudson.com/2015/img/preview.png"
+		/>
+		<meta
+			name="twitter:url"
+			content="https://advent-of-code.brethudson.com/2015/"
+		/>
+		<meta name="theme-color" content="#F44336" />
+		<link
+			href="https://fonts.googleapis.com/css?family=Exo+2:400,700"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" type="text/css" href="css/styles.css" />
+		<link rel="stylesheet" type="text/css" href="css/grid.css" />
+		<script type="text/javascript" src="js/main.js"></script>
+	</head>
+	<body>
+		<div class="container">
+			<div id="day-container" class="row">
+				<script type="text/javascript">
+					addMetaTags();
+					for (var day = 1; day <= 25; ++day) {
+						new SolutionFrame(day);
+					}
+				</script>
+			</div>
 		</div>
-	</div>
-</body>
+	</body>
 </html>
