@@ -49,5 +49,21 @@ export const solution = (input) => {
 
 	answers[0] = [...locations].sort((a, b) => a - b)[0];
 
+	const seedRanges = [...seedsStr.matchAll(/\d+ \d+/g)].map((v) => {
+		const [start, range] = v[0].split(' ').map((n) => +n);
+		return { start, range };
+	});
+
+	const locations2 = seedRanges.map(({ start, range }) => {
+		let lowest = Number.POSITIVE_INFINITY;
+		for (let seed = start, end = start + range; seed < end; ++seed) {
+			const location = convertSeedToLocation(seed);
+			lowest = Math.min(lowest, location);
+		}
+		return lowest;
+	});
+
+	answers[1] = [...locations2].sort((a, b) => a - b)[0];
+
 	return answers;
 };
