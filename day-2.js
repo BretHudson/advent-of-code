@@ -11,7 +11,7 @@ const parseHandful = (handful) => {
 };
 
 export const solution = (input) => {
-	let answers = [null, null];
+	const answers = [null, null];
 
 	// Part 1
 	const testAmounts = parseHandful(
