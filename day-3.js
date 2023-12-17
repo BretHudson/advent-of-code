@@ -46,7 +46,20 @@ export const solution = (input) => {
 		return symbols.some((symbol) => checkPointOverlap(symbol, number, 1));
 	});
 
+	const gearRatiosSum = symbols.reduce((acc, symbol) => {
+		if (symbol.value !== '*') return acc;
+
+		const adjacentNumbers = numbers.filter((number) =>
+			checkPointOverlap(symbol, number, 1),
+		);
+		if (adjacentNumbers.length !== 2) return acc;
+
+		const gearRatio = adjacentNumbers.reduce((acc, v) => acc * v.value, 1);
+		return acc + gearRatio;
+	}, 0);
+
 	answers[0] = numbersNextToSymbols.reduce((acc, v) => acc + v.value, 0);
+	answers[1] = gearRatiosSum;
 
 	return answers;
 };
