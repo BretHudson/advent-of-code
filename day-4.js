@@ -20,5 +20,24 @@ export const solution = (input) => {
 
 	answers[0] = pointsPerCard.reduce((acc, val) => acc + val, 0);
 
+	const cardsWonMap = matchesPerCard.map((matchingNumbers, cardIndex) => {
+		return Array.from({ length: matchingNumbers }, (v, offset) => {
+			return cardIndex + offset + 1;
+		});
+	});
+
+	// since cards can only reference cards after them, we can compute
+	// the cache in descending order
+	// this guarantees that any value retrieved from the cache has already
+	// been computed
+	const cache = Array.from({ length: cards.length });
+	for (let c = cards.length - 1; c >= 0; --c) {
+		cache[c] = cardsWonMap[c]
+			.map((v) => cache[v])
+			.reduce((acc, val) => acc + val, 1); // 1 includes the current card
+	}
+
+	answers[1] = cache.reduce((acc, val) => acc + val, 0);
+
 	return answers;
 };
