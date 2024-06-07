@@ -10,20 +10,53 @@ const _types = [
 
 const TYPE = Object.fromEntries(_types.map((v, i) => [v, i]));
 
-const CARDS = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'];
+const CARDS_1 = [
+	'A',
+	'K',
+	'Q',
+	'J',
+	'T',
+	'9',
+	'8',
+	'7',
+	'6',
+	'5',
+	'4',
+	'3',
+	'2',
+];
+const CARDS_2 = [
+	'A',
+	'K',
+	'Q',
+	'T',
+	'9',
+	'8',
+	'7',
+	'6',
+	'5',
+	'4',
+	'3',
+	'2',
+	'J',
+];
 
 export const solution = (input) => {
 	const answers = [null, null];
 
-	const getType = (cards) => {
-		const distributionsMap = cards.reduce((acc, val) => {
-			acc[val] ??= 0;
-			++acc[val];
-			return acc;
-		}, {});
+	const getType = (distributionsMap, wildcard = false) => {
+		distributionsMap = { ...distributionsMap };
+		let jokers = 0;
+		if (wildcard) {
+			jokers = distributionsMap['J'] ?? 0;
+			delete distributionsMap['J'];
+		}
 		const distributions = Object.values(distributionsMap).sort(
 			(a, b) => b - a,
 		);
+		distributions[0] += jokers;
+		console.log(distributions);
+
 		let dist = null;
 		switch (distributions[0]) {
 			case 5:
@@ -53,23 +86,43 @@ export const solution = (input) => {
 		const [hand, bid] = line.split(' ');
 
 		const cards = hand.split('');
-		const type = getType(cards);
-		const typeName = _types[type]; // for easier debugging
 
-		return { hand, cards, bid: +bid, type, typeName };
+		const distributions = cards.reduce((acc, val) => {
+			acc[val] ??= 0;
+			++acc[val];
+			return acc;
+		}, {});
+
+		const type = [getType(distributions), getType(distributions, true)];
+
+		// for debugging purposes
+		const typeName = _types[type[0]];
+		const typeName2 = _types[type[1]];
+
+		return {
+			hand,
+			typeName,
+			typeName2,
+			cards,
+			bid: +bid,
+			type,
+		};
 	});
 
-	hands.sort((a, b) => {
-		let diff = a.type - b.type;
+	const sortHands = (cardOrder, index) => (a, b) => {
+		let diff = a.type[index] - b.type[index];
 		for (let i = 0; !diff && i < a.cards.length; ++i) {
-			diff ||= CARDS.indexOf(a.cards[i]) - CARDS.indexOf(b.cards[i]);
+			diff ||=
+				cardOrder.indexOf(a.cards[i]) - cardOrder.indexOf(b.cards[i]);
 		}
 		return diff;
-	});
+	};
 
-	answers[0] = hands.reduce((acc, { bid }, i) => {
-		return (acc += bid * (hands.length - i));
-	}, 0);
+	answers = [CARDS_1, CARDS_2].map((cards, cardsIndex) => {
+		hands.sort(sortHands(cards, cardsIndex)).reduce((acc, { bid }, i) => {
+			return (acc += bid * (hands.length - i));
+		}, 0);
+	});
 
 	return answers;
 };
