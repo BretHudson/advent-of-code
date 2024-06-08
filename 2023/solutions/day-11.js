@@ -3,12 +3,37 @@ export const solution = (input) => {
 
 	const lines = input.split('\n');
 	const grid = lines.map((line) => line.split('')).flat();
+	// console.table(grid);
 
 	let height = lines.length;
 	let width = grid.length / height;
 
+	console.log(width, height);
+
 	const getIndex = (x, y) => y * width + x;
 	const getPos = (index) => [index % width, Math.floor(index / width)];
+
+	const computeSum = () => {
+		const galaxies = [];
+		const size = width * height;
+		for (let i = 0; i < size; ++i) {
+			if (grid[i] === '#') galaxies.push(getPos(i));
+		}
+
+		let sum = 0;
+		for (let i = 0; i < galaxies.length; ++i) {
+			for (let j = i + 1; j < galaxies.length; ++j) {
+				const galaxyA = galaxies[i];
+				const galaxyB = galaxies[j];
+				const x = Math.abs(galaxyA[0] - galaxyB[0]);
+				const y = Math.abs(galaxyA[1] - galaxyB[1]);
+				sum += x + y;
+			}
+		}
+		return sum;
+	};
+
+	const preExpansionSum = computeSum();
 
 	// expand the universe
 	const allYPos = Array.from({ length: height }, (_, i) => i).reverse();
@@ -31,24 +56,11 @@ export const solution = (input) => {
 	}
 
 	// get the positions
-	const galaxies = [];
-	const size = width * height;
-	for (let i = 0; i < size; ++i) {
-		if (grid[i] === '#') galaxies.push(getPos(i));
-	}
+	const postExpansionSum = computeSum();
+	answers[0] = postExpansionSum;
 
-	let sum = 0;
-	for (let i = 0; i < galaxies.length; ++i) {
-		for (let j = i + 1; j < galaxies.length; ++j) {
-			const galaxyA = galaxies[i];
-			const galaxyB = galaxies[j];
-			const x = Math.abs(galaxyA[0] - galaxyB[0]);
-			const y = Math.abs(galaxyA[1] - galaxyB[1]);
-			sum += x + y;
-		}
-	}
-
-	answers[0] = sum;
+	const diff = postExpansionSum - preExpansionSum;
+	answers[1] = diff * 999999 + preExpansionSum;
 
 	return answers;
 };
