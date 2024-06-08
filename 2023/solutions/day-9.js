@@ -5,7 +5,7 @@ export const solution = (input) => {
 		.split('\n')
 		.map((line) => line.split(' ').map((v) => +v));
 
-	const getNextDigit = (sequence) => {
+	const getNextDelta = (sequence, callback) => {
 		const deltas = [];
 		for (let i = 0; i < sequence.length - 1; ++i) {
 			deltas.push(sequence[i + 1] - sequence[i]);
@@ -13,12 +13,21 @@ export const solution = (input) => {
 
 		let nextDeltaDigit = 0;
 		if (deltas.some((d) => d !== 0)) {
-			nextDeltaDigit = getNextDigit(deltas);
+			nextDeltaDigit = callback(deltas);
 		}
-		return sequence.at(-1) + nextDeltaDigit;
+		return nextDeltaDigit;
+	};
+
+	const getNextDigit = (sequence) => {
+		return sequence.at(-1) + getNextDelta(sequence, getNextDigit);
+	};
+
+	const getPrevDigit = (sequence) => {
+		return sequence.at(0) - getNextDelta(sequence, getPrevDigit);
 	};
 
 	answers[0] = history.map(getNextDigit).reduce((a, v) => a + v, 0);
+	answers[1] = history.map(getPrevDigit).reduce((a, v) => a + v, 0);
 
 	return answers;
 };
