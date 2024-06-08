@@ -12,17 +12,47 @@ export const solution = (input) => {
 		}),
 	);
 
-	const path = pathInput.split('').map((v) => (v === 'R' ? 1 : 0));
-	let i = 0;
-	let curNode = nodes['AAA'];
-	const targetNode = nodes['ZZZ'];
-	while (curNode !== targetNode) {
-		const dir = path[i++ % path.length];
-		const nextNodeName = curNode[dir];
-		curNode = nodes[nextNodeName];
-	}
+	// find all the nodes that end with A
+	const starts = Object.keys(nodes)
+		.filter((a) => a.endsWith('A'))
+		.sort(); // sort so 'AAA' is first
 
-	answers[0] = i;
+	const path = pathInput.split('').map((v) => (v === 'R' ? 1 : 0));
+	const steps = starts.map((start) => {
+		let i = 0;
+		let curNode = nodes[start];
+		while (true) {
+			const dir = path[i++ % path.length];
+			const nextNodeName = curNode[dir];
+			if (nextNodeName.endsWith('Z')) break;
+			curNode = nodes[nextNodeName];
+		}
+		return i;
+	});
+
+	answers[0] = steps[0];
+
+	const factors = steps.map((n) => {
+		let factors = [];
+		for (let i = 2; i < n; ++i) {
+			while (n % i === 0) {
+				factors.push(i);
+				n /= i;
+			}
+		}
+		return factors;
+	});
+
+	const factorSum = factors.reduce((a, v) => a * v, 1);
+	let i = 1;
+	while (true) {
+		const target = factorSum * i;
+		if (steps.every((s) => target % s === 0)) {
+			answers[1] = target;
+			break;
+		}
+		++i;
+	}
 
 	return answers;
 };
