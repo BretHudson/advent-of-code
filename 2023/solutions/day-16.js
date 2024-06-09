@@ -2,7 +2,6 @@ export const solution = (input) => {
 	const answers = [null, null];
 
 	const grid = input.split('\n').map((v) => v.split(''));
-	const energizedGrid = input.split('\n').map((v) => v.split(''));
 
 	const width = grid[0].length;
 	const height = grid.length;
@@ -16,8 +15,6 @@ export const solution = (input) => {
 
 	const v2add = (a, b) => a.map((v, i) => v + (b[i] ?? 0));
 
-	createBeam([-1, 0], [1, 0]);
-
 	const deleteBeam = (beam) => {
 		beams.splice(beams.indexOf(beam), 1);
 	};
@@ -30,61 +27,89 @@ export const solution = (input) => {
 		createBeam(pos, [-yVel, -xVel]);
 	};
 
-	const rotateDir = (dir, rotations) => {
-		let newDir = dir;
-		for (let i = 0, n = (4 + rotations) % 4; i < n; ++i) {
-			const [xVel, yVel] = newDir;
-			newDir = [yVel, -xVel];
-		}
-		return newDir;
-	};
-
 	const rotateBeam = (beam, rotations) => {
-		beam.dir = rotateDir(beam.dir, rotations);
+		for (let i = 0, n = (4 + rotations) % 4; i < n; ++i) {
+			const [xVel, yVel] = beam.dir;
+			beam.dir = [yVel, -xVel];
+		}
 	};
 
-	const visited = new Map();
-	while (beams.length) {
-		beams.forEach((beam) => {
-			beam.pos = v2add(beam.pos, beam.dir);
+	const exploreGrid = (pos, dir) => {
+		createBeam(pos, dir);
 
-			const [x, y] = beam.pos;
-			if (x < 0 || y < 0 || x >= width || y >= height) {
-				deleteBeam(beam);
-				return;
-			}
+		const energizedGrid = input.split('\n').map((v) => v.split(''));
+		const visited = new Map();
+		while (beams.length) {
+			beams.forEach((beam) => {
+				beam.pos = v2add(beam.pos, beam.dir);
 
-			const hash = [beam.pos, beam.dir].join(',');
-			if (visited.has(hash)) {
-				deleteBeam(beam);
-				return;
-			}
-			visited.set(hash);
+				const [x, y] = beam.pos;
+				if (x < 0 || y < 0 || x >= width || y >= height) {
+					deleteBeam(beam);
+					return;
+				}
 
-			const [xVel, yVel] = beam.dir;
+				const hash = [beam.pos, beam.dir].join(',');
+				if (visited.has(hash)) {
+					deleteBeam(beam);
+					return;
+				}
+				visited.set(hash);
 
-			switch (grid[y][x]) {
-				case '|':
-					if (xVel) splitBeam(beam);
-					break;
-				case '-':
-					if (yVel) splitBeam(beam);
-					break;
-				case '/':
-					if (xVel) rotateBeam(beam, 1);
-					else rotateBeam(beam, -1);
-					break;
-				case '\\':
-					if (xVel) rotateBeam(beam, -1);
-					else rotateBeam(beam, 1);
-					break;
-			}
+				const [xVel, yVel] = beam.dir;
 
-			energizedGrid[y][x] = '#';
-		});
+				switch (grid[y][x]) {
+					case '|':
+						if (xVel) splitBeam(beam);
+						break;
+					case '-':
+						if (yVel) splitBeam(beam);
+						break;
+					case '/':
+						if (xVel) rotateBeam(beam, 1);
+						else rotateBeam(beam, -1);
+						break;
+					case '\\':
+						if (xVel) rotateBeam(beam, -1);
+						else rotateBeam(beam, 1);
+						break;
+				}
+
+				energizedGrid[y][x] = '#';
+			});
+		}
+
+		return energizedGrid.flat().filter((v) => v === '#').length;
+	};
+
+	answers[0] = exploreGrid([-1, 0], [1, 0]);
+
+	const configurations = [];
+	for (let x = 0; x < width; ++x) {
+		configurations.push([
+			[x, -1],
+			[0, 1],
+		]);
+		configurations.push([
+			[x, height],
+			[0, -1],
+		]);
+	}
+	for (let y = 0; y < height; ++y) {
+		configurations.push([
+			[-1, y],
+			[1, 0],
+		]);
+		configurations.push([
+			[width, y],
+			[-1, 0],
+		]);
 	}
 
-	answers[0] = energizedGrid.flat().filter((v) => v === '#').length;
+	// this could be sped up by caching the result of the amount of the grid energzied when hitting a surface, which would require a refactor
+	// brute force gets it done :)
+	const energies = configurations.map((args) => exploreGrid(...args));
+	answers[1] = Math.max(...energies);
 
 	return answers;
 };
