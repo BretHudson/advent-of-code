@@ -1,8 +1,18 @@
 export const solution = (input) => {
 	const answers = [null, null];
 
+	const lines = input.split('\n').map((line) => {
+		const [hint, b] = line.split(' ');
+		const groups = b.split(',').map((v) => +v);
+		return {
+			hint,
+			groups,
+		};
+	});
+
 	// solution via tutorial at https://www.reddit.com/r/adventofcode/comments/18hbbxe/2023_day_12python_stepbystep_tutorial_with_bonus/
-	const calc = (record, groups) => {
+	const cache = new Map();
+	let calc = (record, groups) => {
 		if (!groups.length) return !record.includes('#');
 		if (!record.length) return false;
 
@@ -10,7 +20,7 @@ export const solution = (input) => {
 		const [curGroup] = groups;
 
 		const pound = () => {
-			let group = record.slice(0, curGroup);
+			let group = [...record.slice(0, curGroup)];
 			group = group.map((v) => (v === '?' ? '#' : v));
 
 			const damaged = group.filter((v) => v === '#');
@@ -37,21 +47,36 @@ export const solution = (input) => {
 			case '?':
 				return dot() + pound();
 		}
+
+		console.log('what');
 	};
 
-	const lines = input.split('\n').map((line) => {
-		const [a, b] = line.split(' ');
-		const hint = a.split('');
-		const groups = b.split(',').map((v) => +v);
+	const _calc = calc;
+	calc = (record, groups) => {
+		const hash = [record, groups.join(',')].join(' ');
+		if (cache.has(hash)) return cache.get(hash);
+
+		const value = _calc(record, groups);
+		cache.set(hash, value);
+		return value;
+	};
+
+	const compute = (lines) =>
+		lines
+			.map(({ hint, groups }) => calc(hint, groups))
+			.reduce((a, v) => a + v, 0);
+
+	const foldedLines = lines.map(({ hint, groups }) => {
+		const newHint = Array.from({ length: 5 }, () => hint).join('?');
+		const newGroups = Array.from({ length: 5 }, () => groups).flat();
 		return {
-			hint,
-			groups,
+			hint: newHint,
+			groups: newGroups,
 		};
 	});
 
-	answers[0] = lines
-		.map(({ hint, groups }) => calc(hint, groups))
-		.reduce((a, v) => a + v, 0);
+	answers[0] = compute(lines);
+	answers[1] = compute(foldedLines);
 
 	return answers;
 };
