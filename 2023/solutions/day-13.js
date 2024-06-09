@@ -1,34 +1,71 @@
 export const solution = (input) => {
 	const answers = [null, null];
 
-	const patterns = input.split('\n\n');
+	const patterns = input.split('\n\n').map((pattern) => pattern.split('\n'));
 
-	const findReflection = (lines) => {
-		let maxCount = 0;
+	const compareLines = (lineA, lineB) => {
+		return [...lineA].filter((c, i) => c !== lineB[i]).length;
+	};
+
+	const findReflection = (lines, smudge = false) => {
+		const reflections = [];
+
 		for (let i = 0; i < lines.length - 1; ++i) {
-			let min = i;
-			let max = i + 1;
-			if (lines[min] === lines[max]) {
-				let count = max;
-				for (; lines[min] && lines[max]; --min, ++max) {
-					if (lines[min] !== lines[max]) {
-						count = 0;
-						break;
-					}
-				}
-				maxCount = Math.max(count, maxCount);
+			const diff = compareLines(lines[i], lines[i + 1]);
+			if (diff <= 1) {
+				reflections.push(i);
 			}
 		}
 
-		return maxCount;
+		let count = 0;
+		for (let i = 0; count === 0 && i < lines.length - 1; ++i) {
+			let min = i;
+			let max = i + 1;
+			if (lines[min] === lines[max]) {
+				reflections.push(max);
+				count = max;
+				for (; lines[min] && lines[max]; --min, ++max) {
+					if (lines[min] === lines[max]) continue;
+
+					count = 0;
+					break;
+				}
+			}
+		}
+
+		if (!smudge) return count;
+
+		const normalLine = count - 1;
+
+		for (let i = 0; i < reflections.length; ++i) {
+			let min = reflections[i];
+			if (min === normalLine) continue;
+
+			let smudgeFound = false;
+			let max = min + 1;
+			let count = max;
+
+			for (; lines[min] && lines[max]; --min, ++max) {
+				const diff = compareLines(lines[min], lines[max]);
+				if (diff === 0) continue;
+				if (!smudgeFound && diff === 1) {
+					smudgeFound = true;
+					continue;
+				}
+
+				count = 0;
+				break;
+			}
+
+			if (smudgeFound && count) return count;
+		}
+
+		return 0;
 	};
 
-	const computeScore = (pattern) => {
-		const rows = pattern.split('\n');
-
+	const transpose = (rows) => {
 		const width = rows[0].length;
 		const height = rows.length;
-
 		const columns = [];
 		for (let c = 0; c < width; ++c) {
 			const col = [];
@@ -37,16 +74,21 @@ export const solution = (input) => {
 			}
 			columns.push(col.join(''));
 		}
-
-		const left = findReflection(rows);
-		const above = findReflection(columns);
-		console.log({ left, above });
-		return above + 100 * left;
+		return columns;
 	};
 
-	answers[0] = patterns.reduce((acc, pattern) => {
-		return acc + computeScore(pattern);
-	}, 0);
+	const computeScore = (rows, smudge = false) => {
+		const left = findReflection(rows, smudge);
+		const above = findReflection(transpose(rows), smudge);
+		return 100 * left + above;
+	};
+
+	answers[0] = patterns
+		.map((pattern) => computeScore(pattern))
+		.reduce((a, v) => a + v, 0);
+	answers[1] = patterns
+		.map((pattern) => computeScore(pattern, true))
+		.reduce((a, v) => a + v, 0);
 
 	return answers;
 };
