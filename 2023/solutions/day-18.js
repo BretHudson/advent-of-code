@@ -9,81 +9,61 @@ export const solution = (input) => {
 		return { direction, meters: +meters, color };
 	});
 
-	let xMin = 0,
-		xMax = 0,
-		yMin = 0,
-		yMax = 0;
-
-	let x = 0,
-		y = 0;
-	digPlan.forEach(({ direction, meters }) => {
-		switch (direction) {
-			case 'L':
-				x -= meters;
-				break;
-			case 'R':
-				x += meters;
-				break;
-			case 'U':
-				y -= meters;
-				break;
-			case 'D':
-				y += meters;
-				break;
-		}
-
-		xMin = Math.min(x, xMin);
-		xMax = Math.max(x, xMax);
-		yMin = Math.min(y, yMin);
-		yMax = Math.max(y, yMax);
-	});
-
-	// width & height have built in padding (2) for the flood fill
-	const width = xMax - xMin + 1 + 2;
-	const height = yMax - yMin + 1 + 2;
-
-	const grid = Array.from({ length: height }, () => {
-		return Array.from({ length: width }, () => '.');
-	});
-
-	// adjust to account for padding
-	x = -xMin + 1;
-	y = -yMin + 1;
-	digPlan.forEach(({ direction, meters }) => {
-		for (let i = 0; i < meters; ++i) {
+	const getPoints = (digPlan) => {
+		let x = 0,
+			y = 0;
+		const points = [];
+		const addPoint = (x, y) => points.push([x, y]);
+		digPlan.forEach(({ direction, meters }) => {
 			switch (direction) {
 				case 'L':
-					--x;
+					x -= meters;
 					break;
 				case 'R':
-					++x;
+					x += meters;
 					break;
 				case 'U':
-					--y;
+					y -= meters;
 					break;
 				case 'D':
-					++y;
+					y += meters;
 					break;
 			}
-			grid[y][x] = '#';
+
+			addPoint(x, y);
+		});
+
+		return points;
+	};
+
+	const area = (points) => {
+		let sum = 0;
+		const index = (i) => (i + points.length) % points.length;
+		// this is based off of Green's theorem
+		for (let i = -1; i < points.length - 1; ++i) {
+			const x0 = points[index(i)][0];
+			const yn1 = points[index(i - 1)][1];
+			const yp1 = points[index(i + 1)][1];
+			sum += x0 * (yp1 - yn1);
 		}
+		// add the perimeter (and an extra 1??)
+		const segments = points.map((p, i) => [p, points[index(i + 1)]]);
+		sum += segments.reduce((acc, [[x0, y0], [x1, y1]]) => {
+			return acc + Math.abs(y1 - y0 + (x1 - x0));
+		}, 0);
+		return Math.abs(sum) / 2 + 1;
+	};
+
+	answers[0] = area(getPoints(digPlan));
+
+	const directionMap = ['R', 'D', 'L', 'U'];
+	const hexDigPlan = digPlan.map(({ color }) => {
+		const meters = parseInt(color.substring(0, 5), 16);
+		const direction = directionMap[+color[5]];
+		return { direction, meters };
 	});
 
-	const queue = [[1, 0]];
-	while (queue.length) {
-		const curPos = queue.shift();
-		const [x, y] = curPos;
-
-		if (grid[y][x] === 'x' || grid[y][x] === '#') continue;
-
-		grid[y][x] = 'x';
-		if (x > 0) queue.push([x - 1, y]);
-		if (y > 0) queue.push([x, y - 1]);
-		if (x < width - 1) queue.push([x + 1, y]);
-		if (y < height - 1) queue.push([x, y + 1]);
-	}
-
-	answers[0] = grid.flat().filter((v) => v === '#' || v === '.').length;
+	answers[1] = area(getPoints(hexDigPlan));
 
 	return answers;
 };
