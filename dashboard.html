@@ -1,0 +1,242 @@
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Advent of Code Dashboard</title>
+		<meta name="color-scheme" content="dark light" />
+		<style>
+			:root {
+				@media (prefers-color-scheme: light) {
+					--color-fg: #0f0f23;
+					--color-bg: #fafafa;
+				}
+				@media (prefers-color-scheme: dark) {
+					--color-fg: #fafafa;
+					--color-bg: #0f0f23;
+				}
+			}
+
+			* {
+				&,
+				&::before,
+				&::after {
+					box-sizing: border-box;
+				}
+			}
+
+			body {
+				background-color: var(--color-bg);
+				color: var(--color-fg);
+				text-align: center;
+				padding: 419px 0;
+				padding: 0;
+				margin: 0;
+				font: 1rem 'Source Code Pro', monospace;
+				width: 100%;
+				min-height: 100vh;
+			}
+
+			textarea {
+				padding: 0.75rem;
+			}
+
+			h1 {
+				font-size: 4.5rem;
+			}
+
+			#answers {
+				font-size: 4.5rem;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>AoC Dashboard</h1>
+		<div>
+			<select name="year"></select>
+			<select name="day"></select>
+		</div>
+		<div>
+			<button id="get-input">Get Input</button>
+			<button id="open-source">Open Source</button>
+		</div>
+		<textarea id="puzzle-input" type="text" cols="60" rows="10"></textarea>
+		<div id="answers">
+			<div>-</div>
+			<div>-</div>
+		</div>
+		<script>
+			let ws;
+			const setServerDay = () => {
+				ws.send(
+					JSON.stringify({
+						event: 'set-day',
+						year,
+						day: dayId,
+					}),
+				);
+			};
+
+			// warn on refresh
+			addEventListener('beforeunload', (e) => {
+				e.preventDefault();
+				e.returnValue = true;
+			});
+
+			// Gather elements
+			const inputField = document.getElementById('puzzle-input');
+			const answersDiv = document.getElementById('answers');
+			const yearSelect = document.querySelector('select[name=year]');
+			const daySelect = document.querySelector('select[name=day]');
+			const getInputButton = document.querySelector(
+				'button[id=get-input]',
+			);
+			const openSourceButton = document.querySelector(
+				'button[id=open-source]',
+			);
+
+			// variables
+			const data = JSON.parse(localStorage.getItem('last-day')) ?? {
+				year: 2022,
+				day: 2,
+			};
+			let year = +data.year;
+			let dayId = +data.day;
+			let fileName;
+
+			// Populate years and days
+			// TODO: do the current year
+			const years = Array.from({ length: 9 }, (_, i) => {
+				const value = i + 2015;
+				const option = document.createElement('option');
+				option.value = value;
+				option.textContent = value;
+				if (year === value) option.selected = 'selected';
+				return option;
+			});
+			yearSelect.append(...years);
+			const days = Array.from({ length: 25 }, (_, i) => {
+				const value = i + 1;
+				const option = document.createElement('option');
+				option.value = value;
+				option.textContent = `Day ${value}`;
+				if (dayId === value) option.selected = 'selected';
+				return option;
+			});
+			daySelect.append(...days);
+
+			const changeDay = () => {
+				inputField.value = '';
+				// TODO: get this from server (?)
+				fileName = `./${year}/solutions/day-${dayId}.js`;
+				localStorage.setItem(
+					'last-day',
+					JSON.stringify({
+						year,
+						day: dayId,
+					}),
+				);
+				setServerDay();
+				run(inputField.value);
+			};
+
+			yearSelect.addEventListener('change', (e) => {
+				year = +e.target.value;
+				changeDay();
+			});
+			daySelect.addEventListener('change', (e) => {
+				dayId = +e.target.value;
+				changeDay();
+			});
+
+			// Initiate worker
+			const worker = new Worker('./worker.js', {
+				type: 'module',
+			});
+
+			worker.addEventListener('message', (e) => {
+				e.data.forEach((answer, index) => {
+					answersDiv.children.item(index).textContent =
+						answer ?? 'null';
+				});
+			});
+
+			// Listen for changes
+			inputField.addEventListener('input', (e) => {
+				run(e.target.value);
+			});
+
+			// Execute
+			const run = (input) => {
+				[...answersDiv.children].forEach((child) => {
+					child.textContent = '-';
+				});
+				// console.clear();
+				worker.postMessage({
+					year,
+					day: dayId,
+					input,
+					fileName,
+				});
+			};
+
+			// WebSocket fun
+			const openWebsocket = () => {
+				ws = new WebSocket('ws://127.0.0.1:8080');
+
+				ws.addEventListener('open', () => {
+					changeDay();
+				});
+
+				ws.addEventListener('error', console.error);
+
+				ws.addEventListener('message', (e) => {
+					const data = JSON.parse(e.data);
+					const { event } = data;
+					// console.log('received: %s', data);
+
+					switch (event) {
+						case 'file-update':
+							run(inputField.value);
+							break;
+						case 'get-input':
+							inputField.value = data.input;
+							run(inputField.value);
+							break;
+						default:
+							console.error(event);
+					}
+				});
+
+				ws.addEventListener('close', () => {
+					setTimeout(() => {
+						openWebsocket();
+					}, 100);
+				});
+			};
+
+			openWebsocket();
+
+			// Other
+			const terminateWebWorker = () => {
+				worker.terminate();
+				// TODO: create new worker
+			};
+
+			// Button
+			getInputButton.addEventListener('click', (e) => {
+				e.preventDefault();
+				ws.send(
+					JSON.stringify({ event: 'get-input', year, day: dayId }),
+				);
+			});
+
+			openSourceButton.addEventListener('click', (e) => {
+				e.preventDefault();
+				ws.send(
+					JSON.stringify({ event: 'open-source', year, day: dayId }),
+				);
+			});
+		</script>
+		<button onclick="terminateWebWorker()">Stop WebWorker</button>
+	</body>
+</html>

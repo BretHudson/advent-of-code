@@ -1,0 +1,19 @@
+{
+	"name": "advent-of-code",
+	"version": "1.0.0",
+	"description": "Bret Hudson's Advent of Code source code",
+	"main": "server.js",
+	"type": "module",
+	"scripts": {
+		"start": "node --env-file=.env server.js",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [],
+	"author": "Bret Hudson",
+	"license": "ISC",
+	"dependencies": {
+		"launch-editor": "^2.9.1",
+		"ws": "^8.14.2"
+	},
+	"packageManager": "pnpm@9.8.0"
+}
