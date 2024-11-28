@@ -12,6 +12,7 @@
 	"author": "Bret Hudson",
 	"license": "ISC",
 	"dependencies": {
+		"html5parser": "^2.0.2",
 		"launch-editor": "^2.9.1",
 		"ws": "^8.14.2"
 	},

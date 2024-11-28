@@ -56,6 +56,7 @@
 			<select name="day"></select>
 		</div>
 		<div>
+			<button id="get-description">Get Description</button>
 			<button id="get-input">Get Input</button>
 			<button id="open-source">Open Source</button>
 		</div>
@@ -87,6 +88,9 @@
 			const answersDiv = document.getElementById('answers');
 			const yearSelect = document.querySelector('select[name=year]');
 			const daySelect = document.querySelector('select[name=day]');
+			const getDescriptionButton = document.querySelector(
+				'button[id=get-description]',
+			);
 			const getInputButton = document.querySelector(
 				'button[id=get-input]',
 			);
@@ -170,7 +174,7 @@
 				[...answersDiv.children].forEach((child) => {
 					child.textContent = '-';
 				});
-				// console.clear();
+				console.clear();
 				worker.postMessage({
 					year,
 					day: dayId,
@@ -202,6 +206,12 @@
 							inputField.value = data.input;
 							run(inputField.value);
 							break;
+						case 'get-description': {
+							const { blocks } = data;
+							console.table(blocks.inline);
+							console.table(blocks.standalone);
+							break;
+						}
 						default:
 							console.error(event);
 					}
@@ -223,6 +233,17 @@
 			};
 
 			// Button
+			getDescriptionButton.addEventListener('click', (e) => {
+				e.preventDefault();
+				ws.send(
+					JSON.stringify({
+						event: 'get-description',
+						year,
+						day: dayId,
+					}),
+				);
+			});
+
 			getInputButton.addEventListener('click', (e) => {
 				e.preventDefault();
 				ws.send(
