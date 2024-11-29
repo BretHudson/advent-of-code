@@ -145,6 +145,7 @@ const listenToFile = async (ws, fileName, year) => {
 			timeout = undefined;
 		}, 100);
 
+		console.log('send file update');
 		ws.send(JSON.stringify({ event: 'file-update' }));
 	});
 };
@@ -185,6 +186,7 @@ wss.on('connection', (ws) => {
 			}
 
 			case 'set-day': {
+				console.log('and we good?');
 				// TODO: create some sort of replacement thing
 				const fileName = getFileName(year, day);
 
@@ -194,6 +196,19 @@ wss.on('connection', (ws) => {
 				}
 
 				await listenToFile(ws, fileName, year);
+
+				const description = await getDescription(year, day);
+				const input = await getInput(year, day);
+
+				console.log('sending day-changed');
+				ws.send(
+					JSON.stringify({
+						event: 'day-changed',
+						fileName,
+						description,
+						input,
+					}),
+				);
 				break;
 			}
 

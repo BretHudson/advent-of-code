@@ -7,6 +7,11 @@ addEventListener('message', async (e) => {
 
 	const { solution } = await import(`/${fileName}?q=${Date.now()}`);
 
-	const answer = solution(input);
-	postMessage(answer);
+	try {
+		const answers = solution(input);
+		postMessage({ success: true, answers });
+	} catch (e) {
+		console.error(e);
+		postMessage({ success: false });
+	}
 });

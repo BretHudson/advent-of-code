@@ -25,6 +25,10 @@
 			}
 
 			body {
+				display: grid;
+				grid-template-columns: repeat(2, 1fr);
+				grid-template-rows: auto 1fr;
+
 				background-color: var(--color-bg);
 				color: var(--color-fg);
 				text-align: center;
@@ -36,38 +40,74 @@
 				min-height: 100vh;
 			}
 
+			header {
+				grid-column: 1 / -1;
+				background: #ffffff33;
+			}
+
+			header h1 {
+				margin: 1rem;
+				font-size: 4.5rem;
+			}
+
+			aside {
+				padding: 1rem;
+				background: #000000;
+			}
+
+			main {
+				padding: 1rem;
+			}
+
 			textarea {
 				padding: 0.75rem;
 			}
 
-			h1 {
-				font-size: 4.5rem;
+			#state {
+				--color: transparent;
+				color: var(--color);
 			}
 
 			#answers {
-				font-size: 4.5rem;
+				font-size: 4rem;
 			}
 		</style>
 	</head>
 	<body>
-		<h1>AoC Dashboard</h1>
-		<div>
-			<select name="year"></select>
-			<select name="day"></select>
-		</div>
-		<div>
-			<button id="get-description">Get Description</button>
-			<button id="get-input">Get Input</button>
-			<button id="open-source">Open Source</button>
-		</div>
-		<textarea id="puzzle-input" type="text" cols="60" rows="10"></textarea>
-		<div id="answers">
-			<div>-</div>
-			<div>-</div>
-		</div>
+		<header>
+			<h1>AoC Dashboard</h1>
+		</header>
+		<aside id="frame"></aside>
+		<main>
+			<div>
+				<select name="year"></select>
+				<select name="day"></select>
+			</div>
+			<div>
+				<button id="get-description">Get Description</button>
+				<button id="get-input">Get Input</button>
+				<button id="open-source">Open Source</button>
+			</div>
+			<textarea
+				id="puzzle-input"
+				type="text"
+				cols="60"
+				rows="10"
+			></textarea>
+			<div>State: <span id="state">Init</span></div>
+			<div id="answers">
+				<div>-</div>
+				<div>-</div>
+			</div>
+			<button onclick="terminateWebWorker()">Stop WebWorker</button>
+		</main>
 		<script>
+			// TODO: get this to work if no server, in which case, load server.config.js :)
+
 			let ws;
 			const setServerDay = () => {
+				changeState(STATE.LOAD_DAY);
+				updateAnswers(['-', '-']);
 				ws.send(
 					JSON.stringify({
 						event: 'set-day',
@@ -76,6 +116,25 @@
 					}),
 				);
 			};
+
+			const createState = (name, color) => ({ name, color });
+			const STATE = {
+				INIT: createState('Init', 'pink'),
+				READY: createState('Ready for Input', 'white'),
+				LOAD_DAY: createState('Loading Day', 'yellow'),
+				EXECUTING: createState('Executing Input', 'CornflowerBlue'),
+				COMPLETE: createState('Complete', 'GreenYellow'),
+				ERROR: createState('Error (see console)', 'red'),
+				FAILED: createState('Complete', 'red'),
+			};
+
+			const stateElem = document.getElementById('state');
+			const changeState = ({ name, color }) => {
+				stateElem.textContent = name;
+				stateElem.style.setProperty('--color', color);
+			};
+
+			changeState(STATE.INIT);
 
 			// warn on refresh
 			addEventListener('beforeunload', (e) => {
@@ -129,9 +188,8 @@
 			daySelect.append(...days);
 
 			const changeDay = () => {
+				fileName = undefined;
 				inputField.value = '';
-				// TODO: get this from server (?)
-				fileName = `./${year}/solutions/day-${dayId}.js`;
 				localStorage.setItem(
 					'last-day',
 					JSON.stringify({
@@ -140,7 +198,13 @@
 					}),
 				);
 				setServerDay();
-				run(inputField.value);
+			};
+
+			const updateAnswers = (answers) => {
+				answers.forEach((answer, index) => {
+					answersDiv.children.item(index).textContent =
+						answer ?? 'null';
+				});
 			};
 
 			yearSelect.addEventListener('change', (e) => {
@@ -158,10 +222,13 @@
 			});
 
 			worker.addEventListener('message', (e) => {
-				e.data.forEach((answer, index) => {
-					answersDiv.children.item(index).textContent =
-						answer ?? 'null';
-				});
+				const { success, answers } = e.data;
+				if (success) {
+					changeState(STATE.COMPLETE);
+					updateAnswers(answers);
+				} else {
+					changeState(STATE.ERROR);
+				}
 			});
 
 			// Listen for changes
@@ -171,9 +238,24 @@
 
 			// Execute
 			const run = (input) => {
+				if (!fileName) {
+					changeState(STATE.FAILED);
+					console.error('no fileName');
+					return;
+				}
+
 				[...answersDiv.children].forEach((child) => {
 					child.textContent = '-';
 				});
+
+				// TODO: make sure we have a valid worker & filename
+				if (input.trim() === '') {
+					changeState(STATE.READY);
+					return;
+				}
+
+				changeState(STATE.EXECUTING);
+
 				console.clear();
 				worker.postMessage({
 					year,
@@ -199,6 +281,13 @@
 					// console.log('received: %s', data);
 
 					switch (event) {
+						case 'day-changed':
+							({ fileName } = data);
+
+							inputField.value = data.input;
+							run(inputField.value);
+
+							break;
 						case 'file-update':
 							run(inputField.value);
 							break;
@@ -247,17 +336,24 @@
 			getInputButton.addEventListener('click', (e) => {
 				e.preventDefault();
 				ws.send(
-					JSON.stringify({ event: 'get-input', year, day: dayId }),
+					JSON.stringify({
+						event: 'get-input',
+						year,
+						day: dayId,
+					}),
 				);
 			});
 
 			openSourceButton.addEventListener('click', (e) => {
 				e.preventDefault();
 				ws.send(
-					JSON.stringify({ event: 'open-source', year, day: dayId }),
+					JSON.stringify({
+						event: 'open-source',
+						year,
+						day: dayId,
+					}),
 				);
 			});
 		</script>
-		<button onclick="terminateWebWorker()">Stop WebWorker</button>
 	</body>
 </html>
