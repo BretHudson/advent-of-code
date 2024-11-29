@@ -100,7 +100,7 @@
 				<select name="day"></select>
 			</div>
 			<div>
-				<button id="get-description">Get Description</button>
+				<button id="get-description">Refetch Description</button>
 				<button id="get-input">Get Input</button>
 				<button id="open-source">Open Source</button>
 			</div>
@@ -323,8 +323,10 @@
 							break;
 						case 'get-description': {
 							const { blocks } = data;
-							console.table(blocks.inline);
-							console.table(blocks.standalone);
+
+							const { description } = data;
+							frameElem.innerHTML = description;
+
 							break;
 						}
 						default:

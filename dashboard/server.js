@@ -34,13 +34,14 @@ const sendFetch = async (url, headers = {}) =>
 		},
 	}).then((res) => res.text());
 
-const getDescription = async (year, day) => {
+const getDescription = async (year, day, invalidateCache = false) => {
 	const dayCacheDir = path.join(cacheDir, year.toString(), day.toString());
 	await createDir(dayCacheDir);
 
 	const descriptionOnlyPath = path.join(dayCacheDir, 'main.html');
 
 	try {
+		if (invalidateCache) throw new Error('cache is empty, weird');
 		return await fs.promises.readFile(descriptionOnlyPath, 'utf8');
 	} catch (e) {
 		const url = `https://adventofcode.com/${year}/day/${day}`;
@@ -129,7 +130,7 @@ wss.on('connection', (ws) => {
 
 		switch (event) {
 			case 'get-description': {
-				const description = await getDescription(year, day);
+				const description = await getDescription(year, day, true);
 
 				ws.send(
 					JSON.stringify({
