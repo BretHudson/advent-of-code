@@ -79,6 +79,13 @@
 			#answers {
 				font-size: 4rem;
 			}
+
+			#frame code:hover {
+				cursor: pointer;
+			}
+			#frame code:hover::before {
+				border-color: #ccc;
+			}
 		</style>
 		<link rel="stylesheet" type="text/css" href="styles.css?31" />
 	</head>
@@ -167,6 +174,11 @@
 				'button[id=open-source]',
 			);
 			const frameElem = document.getElementById('frame');
+
+			frameElem.addEventListener('click', ({ target }) => {
+				if (target.tagName.toUpperCase() !== 'CODE') return;
+				inputField.value = target.innerText.trim();
+			});
 
 			// variables
 			const data = JSON.parse(localStorage.getItem('last-day')) ?? {
