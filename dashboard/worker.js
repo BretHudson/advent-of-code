@@ -5,7 +5,7 @@ addEventListener('message', async (e) => {
 
 	// console.log(`Running against input "${input}"`);
 
-	const { solution } = await import(`${fileName}?q=${Date.now()}`);
+	const { solution } = await import(`/${fileName}?q=${Date.now()}`);
 
 	const answer = solution(input);
 	postMessage(answer);
