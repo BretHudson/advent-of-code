@@ -1,44 +1,8 @@
 import fs from 'fs';
 import path from 'path';
-import { parse, walk, SyntaxKind } from 'html5parser';
 import launch from 'launch-editor';
 import { WebSocketServer } from 'ws';
 import { config } from './server.config.js';
-
-function extractCodeBlocks(node, inline = false, codeBlocks = []) {
-	switch (node.name) {
-		case 'p':
-		case 'li':
-			inline = true;
-			break;
-		case 'code': {
-			const content = node.body
-				.map((child) => child.value || '')
-				.join('')
-				.replace(/\n$/g, '');
-			if (content)
-				codeBlocks.push({
-					content: isNaN(content) ? content : +content,
-					inline,
-				});
-			break;
-		}
-	}
-
-	for (const child of node.body ?? []) {
-		extractCodeBlocks(child, inline, codeBlocks);
-	}
-	return codeBlocks;
-}
-
-function extractAllCodeBlocks(html) {
-	const ast = parse(html);
-	const blocks = extractCodeBlocks(ast[2]);
-	const groupedBlocks = Object.groupBy(blocks, ({ inline }) =>
-		inline ? 'inline' : 'standalone',
-	);
-	return groupedBlocks;
-}
 
 const { cacheDir, getFileName, getTemplateFileName } = config;
 
@@ -74,18 +38,21 @@ const getDescription = async (year, day) => {
 	const dayCacheDir = path.join(cacheDir, year.toString(), day.toString());
 	await createDir(dayCacheDir);
 
-	const htmlPath = path.join(dayCacheDir, 'index.html');
+	const descriptionOnlyPath = path.join(dayCacheDir, 'main.html');
 
 	try {
-		return await fs.promises.readFile(htmlPath, 'utf8');
+		return await fs.promises.readFile(descriptionOnlyPath, 'utf8');
 	} catch (e) {
 		const url = `https://adventofcode.com/${year}/day/${day}`;
 		console.log(`Fetching html from ${url}`);
 		const html = await sendFetch(url);
+		const description = html.split('<main>')[1].split('</main>')[0];
 
-		await fs.promises.writeFile(htmlPath, html, 'utf8');
+		const fullPagePath = path.join(dayCacheDir, 'index.html');
+		await fs.promises.writeFile(fullPagePath, html, 'utf8');
+		await fs.promises.writeFile(descriptionOnlyPath, description, 'utf8');
 
-		return html;
+		return description;
 	}
 };
 
@@ -150,8 +117,6 @@ const listenToFile = async (ws, fileName, year) => {
 	});
 };
 
-// TODO: delisten to file!
-
 wss.on('connection', (ws) => {
 	console.warn('we have connection');
 
@@ -166,13 +131,10 @@ wss.on('connection', (ws) => {
 			case 'get-description': {
 				const description = await getDescription(year, day);
 
-				const blocks = extractAllCodeBlocks(description);
-
 				ws.send(
 					JSON.stringify({
 						event: 'get-description',
 						description,
-						blocks,
 					}),
 				);
 				break;
@@ -186,7 +148,6 @@ wss.on('connection', (ws) => {
 			}
 
 			case 'set-day': {
-				console.log('and we good?');
 				// TODO: create some sort of replacement thing
 				const fileName = getFileName(year, day);
 

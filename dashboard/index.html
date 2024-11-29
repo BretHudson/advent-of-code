@@ -6,14 +6,16 @@
 		<meta name="color-scheme" content="dark light" />
 		<style>
 			:root {
-				@media (prefers-color-scheme: light) {
+				--color-fg: #fafafa;
+				--color-bg: #0f0f23;
+				/* @media (prefers-color-scheme: light) {
 					--color-fg: #0f0f23;
 					--color-bg: #fafafa;
 				}
 				@media (prefers-color-scheme: dark) {
 					--color-fg: #fafafa;
 					--color-bg: #0f0f23;
-				}
+				} */
 			}
 
 			* {
@@ -26,7 +28,7 @@
 
 			body {
 				display: grid;
-				grid-template-columns: repeat(2, 1fr);
+				grid-template-columns: repeat(2, 50%);
 				grid-template-rows: auto 1fr;
 
 				background-color: var(--color-bg);
@@ -35,7 +37,7 @@
 				padding: 419px 0;
 				padding: 0;
 				margin: 0;
-				font: 1rem 'Source Code Pro', monospace;
+				font: 1rem monospace;
 				width: 100%;
 				min-height: 100vh;
 			}
@@ -51,12 +53,18 @@
 			}
 
 			aside {
+				text-align: left;
 				padding: 1rem;
-				background: #000000;
+				background: #0f0f23;
+				border-right: 1px solid white;
 			}
 
 			main {
+				position: sticky;
+				top: 0;
+				height: auto;
 				padding: 1rem;
+				align-self: flex-start;
 			}
 
 			textarea {
@@ -72,6 +80,7 @@
 				font-size: 4rem;
 			}
 		</style>
+		<link rel="stylesheet" type="text/css" href="styles.css?31" />
 	</head>
 	<body>
 		<header>
@@ -130,6 +139,7 @@
 
 			const stateElem = document.getElementById('state');
 			const changeState = ({ name, color }) => {
+				console.log('changing state', name);
 				stateElem.textContent = name;
 				stateElem.style.setProperty('--color', color);
 			};
@@ -156,6 +166,7 @@
 			const openSourceButton = document.querySelector(
 				'button[id=open-source]',
 			);
+			const frameElem = document.getElementById('frame');
 
 			// variables
 			const data = JSON.parse(localStorage.getItem('last-day')) ?? {
@@ -283,6 +294,9 @@
 					switch (event) {
 						case 'day-changed':
 							({ fileName } = data);
+
+							const { description } = data;
+							frameElem.innerHTML = description;
 
 							inputField.value = data.input;
 							run(inputField.value);

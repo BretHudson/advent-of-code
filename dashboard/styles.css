@@ -1,0 +1,493 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300');
+
+#frame * {
+	&,
+	&::before,
+	&::after {
+		box-sizing: initial;
+	}
+}
+
+#frame {
+	color: #cccccc;
+	font-family: 'Source Code Pro', monospace;
+	font-weight: 300;
+	font-size: 14pt;
+}
+
+#frame :is(img) {
+	border: 0;
+}
+#frame :is(a) {
+	outline: 0;
+}
+#frame :is(main, figure, figcaption) {
+	display: block;
+}
+#frame :is(pre, code) {
+	font-family: 'Source Code Pro', monospace;
+}
+#frame :is(header, main) {
+	-webkit-text-size-adjust: none;
+}
+
+#frame :is(a) {
+	text-decoration: none;
+	color: #009900;
+}
+#frame :is(a:hover, a:focus) {
+	color: #99ff99;
+}
+#frame :is(h1, h2) {
+	font-size: 1em;
+	font-weight: normal;
+}
+#frame :is(code) {
+	z-index: 1;
+	position: relative;
+	display: inline-block;
+	margin: 0;
+	padding: 0;
+}
+#frame :is(code)::before {
+	z-index: -1;
+	content: ' ';
+	position: absolute;
+	display: block;
+	left: -2px;
+	right: -2px;
+	top: 3px;
+	bottom: 0px;
+	border: 1px solid #333340;
+	background: #10101a;
+}
+#frame :is(pre.wrap) {
+	max-width: 100%;
+	white-space: pre-wrap;
+}
+
+#frame :is(.quiet) {
+	opacity: 0.5;
+}
+#frame :is(p.wrap) {
+	width: 45em;
+}
+
+#frame :is(.hidden-until-hover) {
+	border: 1px dotted gray;
+	overflow: hidden;
+	position: relative;
+	padding: 0 0.5em;
+	transition: border-color 0s linear 5s;
+}
+#frame :is(.hidden-until-hover:before) {
+	content: '(hover to reveal)';
+	position: absolute;
+	opacity: 0.5;
+	text-align: center;
+	left: 0;
+	top: 0;
+	width: 100%;
+	overflow: hidden;
+	transition: width 0s linear 5s;
+}
+#frame :is(.hidden-until-hover > *) {
+	visibility: hidden;
+	transition: visibility 0s linear 5s;
+}
+#frame :is(.hidden-until-hover:hover) {
+	transition: border-color 0s linear 1s;
+	border-color: transparent;
+}
+#frame :is(.hidden-until-hover:hover:before) {
+	content: '( keep hovering )';
+	transition: width 0s linear 1s;
+	width: 0;
+}
+#frame :is(.hidden-until-hover:hover > *) {
+	transition: visibility 0s linear 1s;
+	visibility: visible;
+}
+
+#frame :is(.warning:not(.warning-active)) {
+	transition: color 1s, opacity 1s;
+}
+#frame :is(.warning-active) {
+	color: #ff0000;
+	opacity: 1;
+}
+
+#frame :is(.star-count) {
+	color: #ffff66;
+}
+#frame :is(.supporter-badge) {
+	color: #ffff66;
+}
+#frame :is(a.supporter-badge:hover, a.supporter-badge:focus) {
+	text-decoration: none;
+	color: #ffffcc;
+	text-shadow: 0 0 5px #ffff66;
+}
+#frame :is(.sponsor-badge) {
+	color: #79a2d8;
+}
+#frame :is(a.sponsor-badge:hover, a.sponsor-badge:focus) {
+	text-decoration: none;
+	color: #ccdbed;
+	text-shadow: 0 0 5px #79a2d8;
+}
+
+#frame :is(#sidebar) {
+	width: 200px;
+	float: right;
+	margin: 0 15px 2em 2em;
+	position: relative;
+	z-index: 10;
+}
+#frame :is(#sponsor) {
+	margin-bottom: 2.5em;
+}
+
+#frame :is(header) {
+	white-space: nowrap;
+	cursor: default;
+	z-index: 100;
+	margin-bottom: 2em;
+}
+#frame :is(header h1) {
+	display: inline-block;
+	margin: 0;
+	padding-right: 1em;
+}
+#frame :is(header h1 a, header h1 span) {
+	display: inline-block;
+	text-decoration: none;
+	color: #00cc00;
+	text-shadow: 0 0 2px #00cc00, 0 0 5px #00cc00;
+}
+#frame :is(header h1 a:hover, header h1 a:focus) {
+	color: #99ff99;
+	text-shadow: 0 0 2px #99ff99, 0 0 5px #99ff99;
+}
+#frame :is(header h1.title-event .title-event-wrap) {
+	opacity: 0.33;
+	white-space: pre;
+}
+#frame :is(header .user) {
+	display: inline-block;
+	padding-left: 1em;
+}
+#frame :is(header nav) {
+	display: inline-block;
+}
+#frame :is(header nav ul) {
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+	display: inline-block;
+}
+#frame :is(header nav li) {
+	display: inline-block;
+	padding: 0 0.6em;
+}
+#frame :is(header nav a) {
+	display: inline-block;
+	text-decoration: none;
+	outline: none;
+}
+
+#frame :is(input[type='text'], textarea) {
+	background: transparent;
+	color: inherit;
+	border: 1px solid #666666;
+	background: #10101a;
+	padding: 0 2px;
+	font-family: inherit;
+	font-size: inherit;
+	margin: 0;
+}
+#frame :is(textarea) {
+	vertical-align: top;
+}
+
+#frame :is(label img) {
+	vertical-align: bottom;
+	position: relative;
+	top: -3px;
+	margin-right: 0.3em;
+}
+#frame :is(input[type='radio']) {
+	display: none;
+}
+#frame :is(input[type='radio'] ~ span) {
+	cursor: pointer;
+	display: inline-block;
+}
+#frame :is(input[type='radio'] ~ span:before) {
+	content: '( ) ';
+}
+#frame :is(input[type='radio'] ~ span:hover, input[type='radio'] ~ span:focus) {
+	background-color: #19193b;
+}
+#frame :is(input[type='radio']:checked ~ span) {
+	color: #ffffff;
+}
+#frame :is(input[type='radio']:checked ~ span:before) {
+	content: '(O) ';
+}
+#frame :is(input[type='checkbox']) {
+	display: none;
+}
+#frame :is(input[type='checkbox'] ~ span) {
+	cursor: pointer;
+	display: inline-block;
+}
+#frame :is(input[type='checkbox'] ~ span:before) {
+	content: '[ ] ';
+}
+#frame
+	:is(
+		input[type='checkbox'] ~ span:hover,
+		input[type='checkbox'] ~ span:focus
+	) {
+	background-color: #19193b;
+}
+#frame :is(input[type='checkbox']:checked ~ span) {
+	color: #ffffff;
+}
+#frame :is(input[type='checkbox']:checked ~ span:before) {
+	content: '[X] ';
+}
+#frame :is(input[type='checkbox']:disabled ~ span) {
+	opacity: 0.3;
+	cursor: default;
+}
+#frame :is(input[type='checkbox']:disabled ~ span:before) {
+	content: '[-] ';
+}
+#frame :is(input[type='checkbox']:disabled ~ span:hover) {
+	background-color: transparent;
+}
+
+#frame :is(input[type='submit']) {
+	background: transparent;
+	border: 0;
+	font-family: inherit;
+	font-size: inherit;
+	margin: 0;
+	padding: 0;
+	color: #009900;
+	cursor: pointer;
+}
+#frame :is(input[type='submit']:hover, input[type='submit']:focus) {
+	color: #99ff99;
+}
+#frame :is(*::-moz-focus-inner) {
+	padding: 0;
+	border: 0;
+}
+
+#frame :is(article) {
+	width: 45em;
+	max-width: 100%;
+	margin-bottom: 2em;
+	margin-top: 2em;
+}
+#frame :is(article:first-of-type) {
+	margin-top: 0;
+}
+#frame :is(article h2) {
+	color: #ffffff;
+	margin-top: 1em;
+	margin-bottom: 1em;
+	white-space: nowrap;
+}
+#frame :is(article h2 + *) {
+	margin-top: 0;
+}
+#frame :is(article em) {
+	color: #ffffff;
+	font-style: normal;
+	text-shadow: 0 0 5px #ffffff;
+}
+#frame :is(article em.star) {
+	color: #ffff66;
+	font-style: normal;
+	text-shadow: 0 0 5px #ffff66;
+}
+#frame :is(article a) {
+	white-space: nowrap;
+}
+#frame :is(article .aside) {
+	opacity: 0.6;
+}
+#frame :is(article ul) {
+	list-style-type: none;
+	padding: 0;
+}
+#frame :is(article li) {
+	padding-left: 2.5em;
+	position: relative;
+}
+#frame :is(article li:before) {
+	content: '\00a0\00a0-\00a0';
+	position: absolute;
+	left: 0;
+	top: 0;
+}
+#frame :is(.day-success) {
+	color: #ffff66;
+	text-shadow: 0 0 5px #ffff66;
+}
+
+#frame :is(form#settings input[type='radio'] ~ span) {
+	min-width: 30em;
+}
+#frame :is(form#settings input[type='checkbox'] ~ span) {
+	min-width: 30em;
+}
+
+#frame :is(.share) {
+	color: #009900;
+	cursor: default;
+	transition: color 0.2s 1s;
+	/*position: relative;*/
+}
+#frame :is(.share:hover, .share:focus-within) {
+	color: #aaffaa;
+	transition: color 0.2s 0s;
+}
+#frame :is(.share .share-content) {
+	/*position: absolute; background: #0f0f23;*/
+	display: inline-block;
+	vertical-align: text-bottom;
+	white-space: nowrap;
+	overflow: hidden;
+	max-width: 0;
+	transition: max-width 0.2s 1s;
+}
+#frame :is(.share .share-content:before) {
+	content: '\00a0';
+}
+#frame :is(.share .share-content:after) {
+	/*content: "]";*/
+}
+#frame :is(.share:hover .share-content, .share:focus-within .share-content) {
+	max-width: 45em;
+	transition: max-width 0.2s 0s;
+}
+
+#frame :is(.puzzle-input) {
+	border: 1px solid #999999;
+	background: #333333;
+	color: #ffffff;
+	text-shadow: 0 0 5px #ffffff;
+}
+
+#frame :is(.calendar) {
+	cursor: default;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: -moz-none;
+	-o-user-select: none;
+	user-select: none;
+}
+#frame :is(.calendar > span) {
+	color: #333333;
+}
+#frame :is(.calendar > a) {
+	text-decoration: none;
+	color: #666666;
+	outline: none;
+	cursor: default;
+}
+#frame :is(.calendar a:hover, .calendar a:focus) {
+	background-color: #1e1e46;
+	background-color: rgba(119, 119, 165, 0.2);
+	cursor: pointer;
+}
+#frame :is(#calendar-countdown) {
+	padding-left: 0.5em;
+	color: #cccccc;
+}
+#frame :is(.calendar .calendar-day) {
+	color: #666666;
+}
+#frame :is(.calendar a .calendar-day) {
+	color: #cccccc;
+}
+.calendar a .calendar-mark-complete,
+#frame :is(.calendar a .calendar-mark-verycomplete) {
+	visibility: hidden;
+}
+.calendar a.calendar-complete .calendar-mark-complete,
+#frame :is(.calendar a.calendar-verycomplete .calendar-mark-complete) {
+	visibility: visible;
+	color: #ffff66;
+}
+#frame :is(.calendar a.calendar-verycomplete .calendar-mark-verycomplete) {
+	visibility: visible;
+	color: #ffff66;
+}
+
+#frame :is(.calendar .calendar-day-new) {
+	animation: anim-day-new 5s;
+}
+#frame :is(.calendar .calendar-day-new .calendar-day) {
+	animation: anim-day-new-day 5s;
+}
+@keyframes anim-day-new {
+	0% {
+		color: #333333;
+		text-shadow: 0 0 5px transparent;
+	}
+	25% {
+		color: #ffffff;
+		text-shadow: 0 0 5px #ffffff;
+	}
+	100% {
+		color: #666666;
+		text-shadow: 0 0 5px transparent;
+	}
+}
+@keyframes anim-day-new-day {
+	0% {
+		color: #666666;
+		text-shadow: 0 0 5px transparent;
+	}
+	25% {
+		color: #ffffff;
+		text-shadow: 0 0 5px #ffffff;
+	}
+	100% {
+		color: #cccccc;
+		text-shadow: 0 0 5px transparent;
+	}
+}
+
+#frame :is(.eventlist-event) {
+	white-space: pre;
+}
+
+#frame
+	:is(
+		.stats > span,
+		.stats > span .stats-firstonly,
+		.stats > span .stats-both
+	) {
+	color: #666666;
+}
+#frame :is(.stats > a) {
+	color: #cccccc;
+	min-width: 35em;
+	display: inline-block;
+}
+#frame :is(.stats > a:hover, .stats > a:focus) {
+	background-color: #1e1e46;
+}
+#frame :is(.stats-firstonly) {
+	color: #9999cc;
+}
+#frame :is(.stats-both) {
+	color: #ffff66;
+}
