@@ -186,6 +186,7 @@
 			frameElem.addEventListener('click', ({ target }) => {
 				if (target.tagName.toUpperCase() !== 'CODE') return;
 				inputField.value = target.innerText.trim();
+				run(inputField.value);
 			});
 
 			// variables
