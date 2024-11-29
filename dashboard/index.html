@@ -115,6 +115,10 @@
 				<div>-</div>
 				<div>-</div>
 			</div>
+			<div>
+				<button id="submit-answer-1">Submit Answer 1</button>
+				<button id="submit-answer-2">Submit Answer 2</button>
+			</div>
 			<button onclick="terminateWebWorker()">Stop WebWorker</button>
 		</main>
 		<script>
@@ -174,6 +178,10 @@
 				'button[id=open-source]',
 			);
 			const frameElem = document.getElementById('frame');
+			const submitAnswer1Button =
+				document.getElementById('submit-answer-1');
+			const submitAnswer2Button =
+				document.getElementById('submit-answer-2');
 
 			frameElem.addEventListener('click', ({ target }) => {
 				if (target.tagName.toUpperCase() !== 'CODE') return;
@@ -288,6 +296,10 @@
 				});
 			};
 
+			const updateDescription = (description) => {
+				frameElem.innerHTML = description;
+			};
+
 			// WebSocket fun
 			const openWebsocket = () => {
 				ws = new WebSocket('ws://127.0.0.1:8080');
@@ -307,8 +319,7 @@
 						case 'day-changed':
 							({ fileName } = data);
 
-							const { description } = data;
-							frameElem.innerHTML = description;
+							updateDescription(data.description);
 
 							inputField.value = data.input;
 							run(inputField.value);
@@ -324,9 +335,7 @@
 						case 'get-description': {
 							const { blocks } = data;
 
-							const { description } = data;
-							frameElem.innerHTML = description;
-
+							updateDescription(data.description);
 							break;
 						}
 						default:
@@ -381,6 +390,24 @@
 						day: dayId,
 					}),
 				);
+			});
+
+			[submitAnswer1Button, submitAnswer2Button].forEach((button, i) => {
+				button.addEventListener('click', () => {
+					const answer = answers.children[i].textContent;
+					if (answer === '-' || answer === '') {
+						console.log(`cannot submit ${answer}`);
+						return;
+					}
+					ws.send(
+						JSON.stringify({
+							event: 'submit-answer',
+							year,
+							day: dayId,
+							answer,
+						}),
+					);
+				});
 			});
 		</script>
 	</body>

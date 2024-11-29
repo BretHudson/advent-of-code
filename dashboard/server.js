@@ -25,14 +25,17 @@ const createDir = async (dir) => {
 
 await createDir(cacheDir);
 
-const sendFetch = async (url, headers = {}) =>
-	fetch(url, {
-		method: 'GET',
-		headers: {
-			Cookie: `session=${SESSION_COOKIE}`,
-			...headers,
-		},
+const sendFetch = async (url, method = 'GET', body, _headers = {}) => {
+	const headers = {
+		Cookie: `session=${SESSION_COOKIE}`,
+		..._headers,
+	};
+	return fetch(url, {
+		method,
+		body,
+		headers,
 	}).then((res) => res.text());
+};
 
 const getDescription = async (year, day, invalidateCache = false) => {
 	const dayCacheDir = path.join(cacheDir, year.toString(), day.toString());
@@ -124,7 +127,7 @@ wss.on('connection', (ws) => {
 	ws.on('error', console.error);
 
 	ws.on('message', async (buffer) => {
-		const { event, day, year } = JSON.parse(buffer.toString());
+		const { event, day, year, ...data } = JSON.parse(buffer.toString());
 
 		console.log(`Received: ${event}`);
 
@@ -138,6 +141,30 @@ wss.on('connection', (ws) => {
 						description,
 					}),
 				);
+				break;
+			}
+
+			case 'submit-answer': {
+				const description = await getDescription(year, day);
+				/<input type="hidden" name="level" value="(?<level>\d)">/;
+
+				const level =
+					/<input type="hidden" name="level" value="(?<level>\d)"/.exec(
+						description,
+					)?.groups?.level;
+
+				if (level === undefined) return;
+
+				const { answer } = data;
+				const url = `https://adventofcode.com/${year}/day/${day}/answer`;
+
+				const body = `level=${level}&answer=${answer}`;
+				const res = await sendFetch(url, 'POST', body, {
+					'Content-Type': 'application/x-www-form-urlencoded',
+				});
+				// TODO: handle res
+				// TODO: getDescription(true) if successful!
+				console.log(res);
 				break;
 			}
 
