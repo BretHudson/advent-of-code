@@ -28,13 +28,13 @@ Goals:
 - Automate certain tasks
   - ✅ Generating a new solution file
   - ✅ Getting input from adventofcode.com
-  - 🔳 Posting answer to adventofcode.com
+  - ✅ Posting answer to adventofcode.com
 
 Requirements:
 
 - ✅ Hot reloading
-- 🔳 Infinite loops need to not block main thread
-- 🔳 Does _not_ need to look nice
+- ✅ Infinite loops need to not block main thread
+- ✅ Does _not_ need to look nice
 
 Solution:
 
@@ -47,7 +47,7 @@ Solution:
 
 Stretch Goals:
 
-- 🔳 Pull all code blocks in as potential inputs
+- ✅ Pull all code blocks in as potential inputs
 - 🔳 Test to see if expected output
 - 🔳 Custom logger
 - 🔳 Playwright
