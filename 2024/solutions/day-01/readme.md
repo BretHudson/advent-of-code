@@ -68,7 +68,7 @@ Our goal is to pair up the smallest number on the left list with the smallest nu
 
 ### Approaches
 
-#### 💡 Loop over the input `n` times.
+**💡 Loop over the input `n` times.**
 
 Each iteration, we find the smallest in each list, and then remove them from the list/disqualify them in future iterations.
 
@@ -109,7 +109,7 @@ This approach would be fairly slow, and I fear that part 2's goal wouldn't nicel
 
 </details>
 
-#### 💡 Binary-search
+**💡 Binary-search**
 
 <details>
 
