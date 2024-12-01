@@ -1,5 +1,17 @@
 export const solution = (input) => {
 	const answers = [null, null];
+	{
+		const list1 = [];
+		const list2 = [];
+		const lines = input.split('\n');
+		for (let i = 0; i < lines.length; ++i) {
+			const items = lines[i].split('   '); // there are three spaces between numbers
+			list1.push(Number(items[0]));
+			list2.push(Number(items[1]));
+		}
+		console.table(list1);
+		console.table(list2);
+	}
 
 	const pairs = input
 		.split('\n')

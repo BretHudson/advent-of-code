@@ -104,6 +104,8 @@ const listenToFile = async (ws, fileName, year) => {
 		const templateFileName = getTemplateFileName(year);
 		if (templateFileName === null) throw new Error('uh oh');
 
+		createDir(path.dirname(fileName));
+
 		const template = await fs.promises.readFile(templateFileName, 'utf8');
 		await fs.promises.writeFile(fileName, template, 'utf8');
 	}
