@@ -50,7 +50,9 @@ const getDescription = async (year, day, invalidateCache = false) => {
 		const url = `https://adventofcode.com/${year}/day/${day}`;
 		console.log(`Fetching html from ${url}`);
 		const html = await sendFetch(url);
-		const description = html.split('<main>')[1].split('</main>')[0];
+
+		const description = html.split('<main>')[1]?.split('</main>')[0];
+		if (!description) return null;
 
 		const fullPagePath = path.join(dayCacheDir, 'index.html');
 		await fs.promises.writeFile(fullPagePath, html, 'utf8');
