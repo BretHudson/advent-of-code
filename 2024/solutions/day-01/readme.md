@@ -70,11 +70,9 @@ Our goal is to pair up the smallest number on the left list with the smallest nu
 
 **💡 Loop over the input `n` times.**
 
-Each iteration, we find the smallest in each list, and then remove them from the list/disqualify them in future iterations.
-
 <details>
 
-<summary>Explanation</summary>
+<summary>Each iteration, we find the smallest in each list, and then remove them from the list/disqualify them in future iterations.</summary>
 
 The basic idea for finding the smallest would be as follows:
 
