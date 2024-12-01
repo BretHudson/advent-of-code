@@ -12,8 +12,8 @@ Today's puzzle was pretty simple, a great start to the year. The leaderboard, as
     1. [Approaches](#approaches)
     2. [Solution](#solution)
 1. [Topics](#topics)
-    1. [Approaches](#approaches)
-    2. [Solution](#solution)
+    1. [Approaches](#approaches-1)
+    2. [Solution](#solution-1)
 
 ## Topics
 
@@ -68,26 +68,61 @@ Our goal is to pair up the smallest number on the left list with the smallest nu
 
 ### Approaches
 
-💡 Loop over the input `n` times. Each iteration, we find the smallest in each list, and then remove them from the list/disqualify them in future iterations.
+#### 💡 Loop over the input `n` times.
+
+Each iteration, we find the smallest in each list, and then remove them from the list/disqualify them in future iterations.
+
+<details>
+
+<summary>Explanation</summary>
 
 The basic idea for finding the smallest would be as follows:
 
 ```js
+// do this for each list
 let smallest = Number.POSITIVE_INFINITY;
 for (let i = 0; i < list.length; ++i) {
 	if (list[i] < smallest) {
 		smallest = list[i];
 	}
 }
-// now we have the smallest!
 ```
 
-or if you want to use
+alternatively
+
+```js
+let smallest = Number.POSITIVE_INFINITY;
+for (let i = 0; i < list.length; ++i) {
+	smallest = Math.min(list[i], smallest);
+}
+```
+
+or even
+
+```js
+const smallest = Math.min(...list);
+```
+
+From here, you'd take each list's smallest, get the distance between them, and then remove them from each list so they aren't used again.
 
 This approach would be fairly slow, and I fear that part 2's goal wouldn't nicely extend from this approach.
 
-💡 Binary-search
+</details>
+
+#### 💡 Binary-search
+
+<details>
+
+<summary>Explanation</summary>
+
+blah blah blah
+
+</details>
+
+### Solution
 
 ## Part 2
 
 ### Approaches
+
+### Solution
