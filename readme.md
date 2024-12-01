@@ -5,16 +5,16 @@ This monorepo contains all my solutions to Advent of Code in JavaScript! Each ye
 \* not all years have a site at the moment :(
 	
 Where to find solutions:
-- 2015: [/2015](tree/main/2015)
-- 2016: [/2016/js/day](tree/main/2016/js/day)
-- 2017: [/2017/js/day](tree/main/2017/js/day)
-- 2018: [/2018/js/day](tree/main/2018/js/day)
-- 2019: [/2019/js/day](tree/main/2019/js/day)
-- 2020: [/2020/js/day](tree/main/2020/js/day)
-- 2021: [/2021/js/day](tree/main/2021/js/day)
-- 2022: [/2022/solutions](tree/main/2022/solutions)
-- 2023: [/2023/solutions](tree/main/2023/solutions)
-- 2024: [/2024/solutions](tree/main/2024/solutions)
+- 2015: [/2015](2015)
+- 2016: [/2016/js/day](2016/js/day)
+- 2017: [/2017/js/day](2017/js/day)
+- 2018: [/2018/js/day](2018/js/day)
+- 2019: [/2019/js/day](2019/js/day)
+- 2020: [/2020/js/day](2020/js/day)
+- 2021: [/2021/js/day](2021/js/day)
+- 2022: [/2022/solutions](2022/solutions)
+- 2023: [/2023/solutions](2023/solutions)
+- 2024: [/2024/solutions](2024/solutions)
 
 ## The Dashboard
 
