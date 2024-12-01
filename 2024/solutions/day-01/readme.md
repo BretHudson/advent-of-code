@@ -6,6 +6,19 @@
 
 Today's puzzle was pretty simple, a great start to the year. The leaderboard, as always, was super competitive, with it filling up after just 2 minutes and 31 seconds after posting. Wow!
 
+1. [Topics](#topics)
+1. [Input](#input)
+1. [Part 1](#topics)
+    1. [Approaches](#approaches)
+    2. [Solution](#solution)
+1. [Topics](#topics)
+    1. [Approaches](#approaches)
+    2. [Solution](#solution)
+
+## Topics
+
+-   Sorting
+
 ## Input
 
 Today's input is a list of [tuples](https://en.wikipedia.org/wiki/Tuple). Each tuple contains two integers, representing a "location ID."
@@ -51,9 +64,30 @@ const list2 = pairs.map(([_, v]) => v);
 
 Our goal is to pair up the smallest number on the left list with the smallest number on the right list, and then do the same for the second-smallest number in each list, until we've paired them all up.
 
+`n` will refer to the number of items in a list.
+
 ### Approaches
 
-1. Double for loop
-2. Sort each list
+💡 Loop over the input `n` times. Each iteration, we find the smallest in each list, and then remove them from the list/disqualify them in future iterations.
+
+The basic idea for finding the smallest would be as follows:
+
+```js
+let smallest = Number.POSITIVE_INFINITY;
+for (let i = 0; i < list.length; ++i) {
+	if (list[i] < smallest) {
+		smallest = list[i];
+	}
+}
+// now we have the smallest!
+```
+
+or if you want to use
+
+This approach would be fairly slow, and I fear that part 2's goal wouldn't nicely extend from this approach.
+
+💡 Binary-search
 
 ## Part 2
+
+### Approaches
