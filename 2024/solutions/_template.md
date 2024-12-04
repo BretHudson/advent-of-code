@@ -1,6 +1,6 @@
 # Advent of Code 2024 Day 000
 
-[Solution](index.js)
+[Puzzle](https://adventofcode.com/2024/day/000) | [Solution](index.js)
 
 [Language: JavaScript] 000/000
 

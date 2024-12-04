@@ -1,6 +1,6 @@
 # Advent of Code 2024 Day 2
 
-[Solution](index.js)
+[Puzzle](https://adventofcode.com/2024/day/2) | [Solution](index.js)
 
 [Language: JavaScript] 1177/4982
 
