@@ -302,7 +302,7 @@
 
 			// WebSocket fun
 			const openWebsocket = () => {
-				ws = new WebSocket('ws://127.0.0.1:8080');
+				ws = new WebSocket(`ws://${window.location.host}:8080`);
 
 				ws.addEventListener('open', () => {
 					changeDay();
