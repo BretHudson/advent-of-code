@@ -17,69 +17,66 @@ export const solution = (input) => {
 		return map;
 	};
 
-	const numericKeyMap = registerKeys([
+	const numericKeys = [
 		[7, 8, 9],
 		[4, 5, 6],
 		[1, 2, 3],
 		['', 0, 'A'],
-	]);
-	const directionalKeyMap = registerKeys([
+	];
+	const directionalKeys = [
 		['', '^', 'A'],
 		['<', 'v', '>'],
-	]);
+	];
 
-	const move = {
-		A: {
-			0: '<',
-			1: '^<<',
-			3: '^',
-			4: '^^<<', // shortest?
-			9: '^^^',
-			'<': 'v<<', // not shortest???
-			'^': '<',
-			'>': 'v',
-			v: '<v',
-		},
-		// numpad
-		0: { A: '>', 2: '^' },
-		1: { 7: '^^' },
-		2: { 9: '^^>' },
-		3: { 7: '<<^^' }, // shortest?
-		4: { 5: '>' },
-		5: { 6: '>' },
-		6: { A: 'vv' },
-		7: { 9: '>>' },
-		8: { 0: 'vvv' },
-		9: { A: 'vvv', 8: '<' },
-		// directional
-		'<': {
-			A: '>>^',
-			'^': '>^',
-			v: '>',
-		},
-		'^': { A: '>', '<': '<v', '>': 'v>' },
-		'>': { A: '^', '^': '<^', v: '<' },
-		v: { A: '^>', '<': '<', '>': '>' },
+	const move = {};
+
+	const indices = ['<', '^', 'v', '>'];
+	const offsets = {
+		'<': [-1, 0],
+		'>': [1, 0],
+		'^': [0, -1],
+		v: [0, 1],
 	};
 
-	move['A'][8] = '<^^^'; // ??
-	move[8][2] = 'vv';
-	move[2][6] = '^>'; // ??
+	const computeMoves = (keyGrid) => {
+		const keyMap = registerKeys(keyGrid);
+		const keys = [...keyMap.keys()];
+		keys.forEach((startKey) => {
+			const start = keyMap.get(startKey);
+			move[startKey] ??= {};
 
-	move[3][4] = '<<^'; // ??
-	move[4][1] = 'v';
-	move[1]['A'] = '>>v'; // !
+			keys.forEach((endKey) => {
+				if (startKey === endKey) return;
 
-	move['A'][5] = '<^^'; // ??
-	move[5][8] = '^';
-	move[2]['A'] = 'v>'; // ??
+				const end = keyMap.get(endKey);
+				const delta = [end[0] - start[0], end[1] - start[1]];
+				const newMove = [];
+				for (; delta[0] !== 0; delta[0] -= Math.sign(delta[0])) {
+					newMove.push(delta[0] > 0 ? '>' : '<');
+				}
+				for (; delta[1] !== 0; delta[1] -= Math.sign(delta[1])) {
+					newMove.push(delta[1] > 0 ? 'v' : '^');
+				}
 
-	move[8][3] = 'vv>'; // ??
-	move[3]['A'] = 'v';
+				newMove.sort((a, b) => indices.indexOf(a) - indices.indexOf(b));
 
-	move['A'][6] = '^^';
-	move[6][7] = move[3][4]; // lol
-	move[7][0] = '>vvv'; // ??
+				const pos = [...start];
+				for (let i = 0; i < newMove.length; ++i) {
+					pos[0] += offsets[newMove[i]][0];
+					pos[1] += offsets[newMove[i]][1];
+					if (keyGrid[pos[1]][pos[0]] === '') {
+						newMove.reverse();
+						break;
+					}
+				}
+
+				move[startKey][endKey] = newMove.join('');
+			});
+		});
+	};
+
+	computeMoves(directionalKeys);
+	computeMoves(numericKeys);
 
 	const cache = new Map();
 
@@ -94,15 +91,10 @@ export const solution = (input) => {
 				let c = '';
 				let next = chunk[i];
 				if (cur !== next) {
-					const blah = move[cur]?.[next];
-					if (blah === undefined) {
-						throw new Error(`'${cur}' => '${next}'`);
-					}
 					c += move[cur][next];
 					cur = next;
 				}
-				c += 'A';
-				chain.push(c);
+				chain.push(c + 'A');
 			}
 
 			let score = chain.join('').length;
