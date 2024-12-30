@@ -37,4 +37,49 @@ export const config = {
 				return `./${year}/solutions/_template.js`;
 		}
 	},
+	process: (year) => {
+		switch (year) {
+			case 2016:
+			case 2017:
+				return (input, fileName, callback) => {
+					const worker = new Worker(fileName);
+					worker.onmessage = (e) => {
+						callback(true, e.data.result);
+					};
+					worker.postMessage({
+						msg: 'execute',
+						input: input,
+					});
+				};
+			case 2018:
+				return (input, fileName, callback) => {
+					const worker = new Worker(fileName);
+					worker.onmessage = (msg) => {
+						const { data } = msg;
+						switch (data.msg) {
+							case 'result':
+								callback(data.finished, data.result);
+								break;
+						}
+					};
+					worker.postMessage({ msg: 'init' });
+					worker.postMessage({
+						msg: 'execute',
+						input: input,
+					});
+				};
+			case 2019:
+			case 2020:
+			case 2021:
+				return (input, fileName, callback) => {
+					const worker = new Worker(fileName);
+					worker.onmessage = (e) => {
+						callback(true, e.data.result);
+					};
+					worker.postMessage({
+						input,
+					});
+				};
+		}
+	},
 };
