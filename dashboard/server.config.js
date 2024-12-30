@@ -4,7 +4,7 @@ export const config = {
 		const day2 = day.toString().padStart(2, '0');
 		switch (year) {
 			case 2015:
-				return null;
+				return `./2015/day${day}.html`;
 			case 2016:
 			case 2017:
 			case 2018:
@@ -39,6 +39,66 @@ export const config = {
 	},
 	process: (year) => {
 		switch (year) {
+			case 2015:
+				return async (input, fileName, callback) => {
+					fetch(fileName)
+						.then((res) => res.text())
+						.then(async (res) => {
+							const xxx = await fetch(
+								'/2015/libraries/md5.js',
+							).then((res) => res.text());
+
+							const _answers = [null, null];
+
+							let answerTimeout = false;
+
+							const answers = new Proxy(_answers, {
+								set: (obj, prop, value) => {
+									obj[prop] = value ?? '-';
+
+									if (!answerTimeout && value === '') {
+										answerTimeout = -1;
+									}
+									if (answerTimeout) {
+										clearTimeout(answerTimeout);
+										answerTimeout = setTimeout(() => {
+											callback(true, [...answers]);
+										}, 5);
+									}
+
+									return true;
+								},
+							});
+
+							const js =
+								xxx +
+								';' +
+								res
+									.split('<script type="text/javascript">')[1]
+									.split('</script>')[0]
+									.replaceAll(
+										`document.getElementById('puzzle-input').value`,
+										JSON.stringify(input),
+									)
+									.replaceAll(
+										`document.getElementById('output1').value`,
+										'answers[0]',
+									)
+									.replaceAll(
+										`document.getElementById('output2').value`,
+										'answers[1]',
+									)
+									.replaceAll(
+										`document.getElementById(output).value`,
+										`answers[+(output === 'output2')]`,
+									) +
+								'generateOutput()';
+
+							eval(js);
+
+							if (!answerTimeout) callback(true, [...answers]);
+						});
+				};
 			case 2016:
 			case 2017:
 				return (input, fileName, callback) => {
