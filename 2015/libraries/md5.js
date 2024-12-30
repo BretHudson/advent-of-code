@@ -100,7 +100,7 @@ return cmn(b ^ c ^ d, a, b, x, s, t);
 function ii(a, b, c, d, x, s, t) {
 return cmn(c ^ (b | (~d)), a, b, x, s, t);
 }
-
+var txt;
 function md51(s) {
 txt = '';
 var n = s.length,

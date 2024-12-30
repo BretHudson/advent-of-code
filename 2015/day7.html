@@ -92,9 +92,9 @@
 					continue;
 				}
 				
-				lWire = wire.parents[0];
+				var lWire = wire.parents[0];
 				if (isNaN(lWire)) lWire = wires[lWire].value;
-				rWire = (numParents === 2) ? wire.parents[1] : null;
+				var rWire = (numParents === 2) ? wire.parents[1] : null;
 				if (isNaN(rWire)) rWire = wires[rWire].value;
 				
 				switch (String(wire.gate)) {

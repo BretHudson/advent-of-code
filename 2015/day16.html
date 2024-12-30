@@ -95,9 +95,9 @@
 				perfumes: 1
 			};
 			
-			sues = parseSues(puzzleInput, columns);
-			filteredSues = filterSues(sues, columns, mySue, oldRetroencabulator);
-			filteredSuesMRE = filterSues(sues, columns, mySue, newRetroencabulator);
+			var sues = parseSues(puzzleInput, columns);
+			var filteredSues = filterSues(sues, columns, mySue, oldRetroencabulator);
+			var filteredSuesMRE = filterSues(sues, columns, mySue, newRetroencabulator);
 			
 			document.getElementById('output1').value = (filteredSues.length > 0) ? filteredSues[0].number : -1;
 			document.getElementById('output2').value = (filteredSues.length > 0) ? filteredSuesMRE[0].number : -1;

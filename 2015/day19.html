@@ -26,7 +26,7 @@
 				var regex = /(\w+) => (\w+)/g;
 				var match = regex.exec(line);
 				//console.log({ line, match });
-				atom = match[1];
+				var atom = match[1];
 				
 				if (result.replacements[atom] === undefined)
 					result.replacements[atom] = [];
@@ -44,11 +44,11 @@
 		function generateMolecules(base, replacements) {
 			var molecules = [];
 			
-			var sub, i, temp, index, newMolecule;
+			var sub, temp, index, newMolecule;
 			for (var atomToReplace in replacements) {
 				sub = replacements[atomToReplace];
 				
-				for (i = 0, n = sub.length; i < n; ++i) {
+				for (var i = 0, n = sub.length; i < n; ++i) {
 					temp = base.slice();
 					
 					var dashes = new Array(atomToReplace.length + 1).join('-');

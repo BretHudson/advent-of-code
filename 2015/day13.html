@@ -46,7 +46,7 @@
 				var newRemaining = remaining.slice();
 				newProcessed.push(newRemaining.splice(i, 1)[0]);
 				if (newRemaining.length > 0) {
-					results = permutate(newProcessed, newRemaining);
+					var results = permutate(newProcessed, newRemaining);
 					permutations = permutations.concat(results);
 				} else
 					permutations.push(newProcessed);

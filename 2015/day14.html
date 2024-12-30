@@ -96,7 +96,7 @@
 		function generateOutput() {
 			var puzzleInput = document.getElementById('puzzle-input').value;
 			
-			stats = getReindeerStats(puzzleInput);
+			var stats = getReindeerStats(puzzleInput);
 			
 			var furthestReindeer = whoIsFurthestAtSeconds(stats, 2503);
 			var mostPointsReindeer = mostPointsAtSeconds(stats, 2503);
