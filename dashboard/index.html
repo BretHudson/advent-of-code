@@ -184,7 +184,12 @@
 
 			frameElem.addEventListener('click', ({ target }) => {
 				if (target.tagName.toUpperCase() !== 'CODE') return;
-				inputField.value = target.innerText.trim();
+				let text = target.innerText;
+				text = text
+					.split('\n')
+					.filter((line) => line.trim().length)
+					.join('\n');
+				inputField.value = text;
 				run(inputField.value);
 			});
 
@@ -248,19 +253,32 @@
 			});
 
 			// Initiate worker
-			const worker = new Worker('./worker.js', {
-				type: 'module',
-			});
+			let worker;
 
-			worker.addEventListener('message', (e) => {
-				const { success, answers } = e.data;
-				if (success) {
-					changeState(STATE.COMPLETE);
-					updateAnswers(answers);
-				} else {
-					changeState(STATE.ERROR);
-				}
-			});
+			const startWorker = () => {
+				if (worker) throw new Error('???');
+
+				worker = new Worker('./worker.js', {
+					type: 'module',
+				});
+
+				worker.addEventListener('message', (e) => {
+					const { success, answers } = e.data;
+					if (success) {
+						changeState(STATE.COMPLETE);
+						updateAnswers(answers);
+					} else {
+						changeState(STATE.ERROR);
+					}
+				});
+			};
+
+			const terminateWebWorker = () => {
+				worker?.terminate();
+				worker = undefined;
+			};
+
+			startWorker();
 
 			// Listen for changes
 			inputField.addEventListener('input', (e) => {
@@ -269,6 +287,8 @@
 
 			// Execute
 			const run = (input) => {
+				terminateWebWorker();
+
 				if (!fileName) {
 					changeState(STATE.FAILED);
 					console.error('no fileName');
@@ -288,6 +308,8 @@
 				changeState(STATE.EXECUTING);
 
 				console.clear();
+
+				startWorker();
 				worker.postMessage({
 					year,
 					day: dayId,
@@ -351,12 +373,6 @@
 			};
 
 			openWebsocket();
-
-			// Other
-			const terminateWebWorker = () => {
-				worker.terminate();
-				// TODO: create new worker
-			};
 
 			// Button
 			getDescriptionButton.addEventListener('click', (e) => {
