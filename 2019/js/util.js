@@ -44,6 +44,10 @@ Array.prototype.combinations = function (n) {
 	return _combinations(n, [...this]).map((arr) => arr.map((i) => this[i]));
 };
 
+Array.prototype.transpose = function () {
+	return this[0].map((_, colIndex) => this.map((row) => row[colIndex]));
+};
+
 const createComputer = (memory, input = []) => ({
 	pointer: 0,
 	input: [...input],
