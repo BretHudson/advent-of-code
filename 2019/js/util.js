@@ -54,6 +54,9 @@ const createComputer = (memory, input = []) => ({
 	output: [],
 	relativeBase: 0,
 	memory: [...memory],
+	loopDetectionEnabled: false,
+	inLoop: false,
+	history: [],
 	halted: false,
 });
 
@@ -142,6 +145,51 @@ const stepComputer = (computer) => {
 		Math.floor(code / 1000) % 10,
 		Math.floor(code / 10000) % 10,
 	];
+	if (computer.loopDetectionEnabled) {
+		computer.history.push(opcode);
+		let slow = 0;
+		let fast = 0;
+		if (computer.history.length > 5000) {
+			while (fast < computer.history.length - 2) {
+				slow += 1;
+				fast += 2;
+
+				const distance = fast - slow;
+				if (computer.history.length - fast < distance) continue;
+				if (computer.history[slow] === computer.history[fast]) {
+					if (computer.history.length > 10000) {
+						console.log({ slow, fast });
+					}
+					let loop = true;
+					let i;
+					for (i = 0; loop && i < computer.history.length; ++i) {
+						if (
+							computer.history[slow + i] !==
+								computer.history[fast + i] &&
+							computer.history[slow + i] !== undefined &&
+							computer.history[fast + i] !== undefined
+						) {
+							loop = false;
+							break;
+						}
+					}
+
+					if (loop) {
+						computer.inLoop = loop;
+						break;
+					}
+				}
+			}
+		}
+
+		if (computer.history.length > 100000) {
+			// throw new Error('too many iterations');
+			computer.loopDetectionEnabled = false;
+			computer.inLoop = true;
+			console.warn('too many iterations');
+			throw new Error();
+		}
+	}
 	const op = opcodes[opcode];
 	const params = computer.memory.slice(
 		computer.pointer + 1,
