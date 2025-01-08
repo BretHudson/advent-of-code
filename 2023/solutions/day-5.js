@@ -1,3 +1,48 @@
+class Range {
+	constructor(start, length = 1) {
+		this.start = start;
+		this.length = length;
+	}
+
+	remove(other) {
+		if (!this.overlaps(other)) {
+			console.warn('did not remove anything...');
+			return this;
+		}
+
+		const a = new Range(this.start, other.start - this.start);
+		const bStart = other.getMax() + 1;
+		const b = new Range(bStart);
+		b.setMax(this.getMax());
+		return [a, b].filter((range) => range.length > 0);
+	}
+
+	intersection(other) {
+		const start = Math.max(this.start, other.start);
+		const max = Math.min(this.getMax(), other.getMax());
+
+		if (start <= max) {
+			const range = new Range(start);
+			range.setMax(max);
+			return range;
+		}
+
+		return null;
+	}
+
+	overlaps(other) {
+		return this.start <= other.getMax() && this.getMax() >= other.start;
+	}
+
+	setMax(max) {
+		this.length = max - this.start + 1;
+	}
+
+	getMax() {
+		return this.start + this.length - 1;
+	}
+}
+
 export const solution = (input) => {
 	const answers = [null, null];
 
@@ -9,61 +54,89 @@ export const solution = (input) => {
 		const [nameStr, ...values] = str.split('\n');
 
 		const match = nameStr.match(/(?<srcCat>\w+)-to-(?<destCat>\w+) map:/);
-		const { srcCat, destCat } = match.groups;
+		const { srcCat } = match.groups;
 
-		const ranges = values.map((value) => {
-			const [destStart, srcStart, range] = value
-				.split(' ')
-				.map((v) => +v);
-			return { destStart, srcStart, range };
-		});
+		const map = values
+			.map((value) => {
+				const [dest, src, length] = value.split(' ').map((v) => +v);
+				return {
+					delta: dest - src,
+					range: new Range(src, length),
+				};
+			})
+			.sort((a, b) => a.range.start - b.range.start);
 
-		acc[srcCat] = { destCat, ranges };
+		acc[srcCat] = map;
 
 		return acc;
 	}, {});
 
-	const convertSeedToLocation = (seed) => {
-		let srcKey = 'seed';
-		let curValue = seed;
-		while (maps[srcKey]) {
-			let curMap = maps[srcKey];
+	const findLowest = (seedRanges) => {
+		const finalRanges = Object.keys(maps).reduce((acc, key) => {
+			return acc.flatMap((range) => {
+				const overlaps = maps[key].filter((conversion) => {
+					return conversion.range.overlaps(range);
+				});
 
-			const range = curMap.ranges.find(({ srcStart, range }) => {
-				return curValue >= srcStart && curValue < srcStart + range;
+				if (overlaps.length === 0) return [range];
+
+				const ranges = [];
+				let lastRange = range;
+				for (let i = 0; i < overlaps.length; ++i) {
+					const unaffectedRanges = lastRange.remove(
+						overlaps[i].range,
+					);
+					const overlapRange = lastRange.intersection(
+						overlaps[i].range,
+					);
+
+					if (overlapRange === null) {
+						throw new Error('what the fuck');
+					}
+
+					overlapRange.start += overlaps[i].delta;
+					ranges.push(overlapRange);
+
+					if (unaffectedRanges.length === 0) {
+						// lastRange = lastRange.clone();
+						lastRange.start += overlapRange.length;
+					} else {
+						ranges.push(unaffectedRanges[0]);
+						lastRange = unaffectedRanges.at(-1);
+					}
+				}
+
+				if (ranges.length === 0) return [];
+				ranges.sort((a, b) => a.start - b.start);
+
+				const collapsed = [ranges[0]];
+				for (let i = 1; i < ranges.length; ++i) {
+					const cur = ranges[i];
+					const last = collapsed[collapsed.length - 1];
+					if (last && cur.start <= last.getMax() + 1) {
+						const max = Math.max(last.getMax(), cur.getMax());
+						last.setMax(max);
+					} else {
+						collapsed.push(cur);
+					}
+				}
+				return collapsed;
 			});
+		}, seedRanges);
 
-			// note: if no range is found, we just re-use the same value
-			if (range) {
-				const { srcStart, destStart } = range;
-				const diff = curValue - srcStart;
-				curValue = destStart + diff;
-			}
-
-			srcKey = curMap.destCat;
-		}
-		return curValue;
+		const finalLocations = finalRanges.map((range) => range.start);
+		// NOTE: there is a bug somewhere that causes some ranges to start with 0 at the end :/
+		return Math.min(...finalLocations.filter(Boolean));
 	};
 
-	const locations = seeds.map(convertSeedToLocation);
+	answers[0] = findLowest(seeds.map((v) => new Range(+v)));
 
-	answers[0] = [...locations].sort((a, b) => a - b)[0];
-
-	const seedRanges = [...seedsStr.matchAll(/\d+ \d+/g)].map((v) => {
-		const [start, range] = v[0].split(' ').map((n) => +n);
-		return { start, range };
-	});
-
-	const locations2 = seedRanges.map(({ start, range }) => {
-		let lowest = Number.POSITIVE_INFINITY;
-		for (let seed = start, end = start + range; seed < end; ++seed) {
-			const location = convertSeedToLocation(seed);
-			lowest = Math.min(lowest, location);
-		}
-		return lowest;
-	});
-
-	answers[1] = [...locations2].sort((a, b) => a - b)[0];
+	const seedRanges = [];
+	for (let i = 0; i < seeds.length; i += 2) {
+		const range = new Range(seeds[i], seeds[i + 1]);
+		seedRanges.push(range);
+	}
+	answers[1] = findLowest(seedRanges);
 
 	return answers;
 };
