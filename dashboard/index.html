@@ -149,9 +149,20 @@
 			};
 
 			const stateElem = document.getElementById('state');
-			const changeState = ({ name, color }) => {
-				stateElem.textContent = name;
+			const changeState = ({ name, color }, duration) => {
+				const start = performance.now();
+				let time;
+				if (duration) {
+					if (duration > 1e3) {
+						time = (duration / 1000).toFixed(3) + 's';
+					} else {
+						time = duration.toFixed(1) + 'ms';
+					}
+					time = `(${time})`;
+				}
+				stateElem.textContent = [name, time].filter(Boolean).join(' ');
 				stateElem.style.setProperty('--color', color);
+				const end = performance.now();
 			};
 
 			changeState(STATE.INIT);
@@ -261,12 +272,12 @@
 				});
 
 				worker.addEventListener('message', (e) => {
-					const { success, answers } = e.data;
+					const { success, answers, duration } = e.data;
 					if (success) {
-						changeState(STATE.COMPLETE);
+						changeState(STATE.COMPLETE, duration);
 						updateAnswers(answers);
 					} else {
-						changeState(STATE.ERROR);
+						changeState(STATE.ERROR, duration);
 					}
 				});
 			};
