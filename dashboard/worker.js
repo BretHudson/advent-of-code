@@ -7,7 +7,7 @@ addEventListener('message', async (e) => {
 
 	// console.log(`Running against input "${input}"`);
 	try {
-		const fileNameUnique = `/${fileName}?q=${Date.now()}`;
+		const fileNameUnique = `/${fileName}?${Date.now().toString(36)}`;
 		if (!process) {
 			const { solution } = await import(fileNameUnique);
 			const answers = solution(input);
