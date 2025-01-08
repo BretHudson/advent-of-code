@@ -184,11 +184,9 @@
 
 			frameElem.addEventListener('click', ({ target }) => {
 				if (target.tagName.toUpperCase() !== 'CODE') return;
-				let text = target.innerText;
-				text = text
-					.split('\n')
-					.filter((line) => line.trim().length)
-					.join('\n');
+				const text = target.innerText
+					.replace(/^(?:\r)?\n/, '')
+					.replace(/(?:\r)?\n$/, '');
 				inputField.value = text;
 				run(inputField.value);
 			});
