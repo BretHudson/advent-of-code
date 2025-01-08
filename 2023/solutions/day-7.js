@@ -42,8 +42,6 @@ const CARDS_2 = [
 ];
 
 export const solution = (input) => {
-	const answers = [null, null];
-
 	const getType = (distributionsMap, wildcard = false) => {
 		distributionsMap = { ...distributionsMap };
 		let jokers = 0;
@@ -55,7 +53,6 @@ export const solution = (input) => {
 			(a, b) => b - a,
 		);
 		distributions[0] += jokers;
-		console.log(distributions);
 
 		let dist = null;
 		switch (distributions[0]) {
@@ -95,14 +92,8 @@ export const solution = (input) => {
 
 		const type = [getType(distributions), getType(distributions, true)];
 
-		// for debugging purposes
-		const typeName = _types[type[0]];
-		const typeName2 = _types[type[1]];
-
 		return {
 			hand,
-			typeName,
-			typeName2,
 			cards,
 			bid: +bid,
 			type,
@@ -118,11 +109,11 @@ export const solution = (input) => {
 		return diff;
 	};
 
-	answers = [CARDS_1, CARDS_2].map((cards, cardsIndex) => {
-		hands.sort(sortHands(cards, cardsIndex)).reduce((acc, { bid }, i) => {
-			return (acc += bid * (hands.length - i));
-		}, 0);
+	return [CARDS_1, CARDS_2].map((cards, cardsIndex) => {
+		return hands
+			.sort(sortHands(cards, cardsIndex))
+			.reduce((acc, { bid }, i) => {
+				return (acc += bid * (hands.length - i));
+			}, 0);
 	});
-
-	return answers;
 };
