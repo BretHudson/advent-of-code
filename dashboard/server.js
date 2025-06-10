@@ -119,13 +119,7 @@ const listenToFile = async (ws, fileName, year) => {
 			timeout = undefined;
 		}, 100);
 
-		if (runServerSide) {
-			ws.send(JSON.stringify({ event: 'server-executing' }));
-			ws.send(JSON.stringify({ event: 'server-result' }));
-		} else {
-			console.log('send file update');
-			ws.send(JSON.stringify({ event: 'file-update' }));
-		}
+		ws.send(JSON.stringify({ event: 'file-update' }));
 	});
 };
 
@@ -212,11 +206,14 @@ wss.on('connection', (ws) => {
 			}
 
 			case 'execute': {
-				// TODO(bret): how do we execute it???
 				const { input } = data;
-				const fileName = '.' + getFileName(year, day);
 
-				const { solution } = await import(fileName);
+				const filePath = `.${getFileName(
+					year,
+					day,
+				)}?${Date.now().toString(36)}`;
+
+				const { solution } = await import(filePath);
 				const start = performance.now();
 				const answers = solution(input);
 				const duration = performance.now() - start;
