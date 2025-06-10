@@ -1,5 +1,6 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
+import child_process from 'node:child_process';
 import launch from 'launch-editor';
 import { WebSocketServer } from 'ws';
 import { config } from './server.config.js';
@@ -208,23 +209,72 @@ wss.on('connection', (ws) => {
 			case 'execute': {
 				const { input } = data;
 
-				const filePath = `.${getFileName(
-					year,
-					day,
-				)}?${Date.now().toString(36)}`;
+				const useGo = true;
+				if (useGo) {
+					const goDir = 'C:\\Projects\\Go\\aoc-2024-golang';
+					child_process.exec(
+						path.join(goDir, 'run.bat'),
+						(err, stdout, stderr) => {
+							if (err) {
+								console.error(err);
+								return;
+							}
+							console.log(stdout);
+							const answers = [null, null];
+							const regex = /Part (\d): (.+)/g;
+							let matches;
+							while ((matches = regex.exec(stdout))) {
+								console.log(matches);
+								const [_, index, answer] = matches;
+								answers[+index - 1] = Number.isNaN(answer)
+									? answer
+									: +answer;
+							}
+							console.log(answers);
+							const duration = -1;
+							ws.send(
+								JSON.stringify({
+									event: 'answers',
+									success: true,
+									answers,
+									duration,
+								}),
+							);
+						},
+					);
+					const child = child_process.spawn(`cd ${goDir}`, {
+						shell: true,
+					});
+					child.stdout.on('data', (data) => {
+						console.log(`stdout: ${data}`);
+					});
 
-				const { solution } = await import(filePath);
-				const start = performance.now();
-				const answers = solution(input);
-				const duration = performance.now() - start;
-				ws.send(
-					JSON.stringify({
-						event: 'answers',
-						success: true,
-						answers,
-						duration,
-					}),
-				);
+					child.stderr.on('data', (data) => {
+						console.error(`stderr: ${data}`);
+					});
+
+					child.on('close', (code) => {
+						console.log(`child process exited with code ${code}`);
+					});
+				} else {
+					const filePath = `.${getFileName(
+						year,
+						day,
+					)}?${Date.now().toString(36)}`;
+
+					const { solution } = await import(filePath);
+					const start = performance.now();
+					const answers = solution(input);
+					const duration = performance.now() - start;
+					ws.send(
+						JSON.stringify({
+							event: 'answers',
+							success: true,
+							answers,
+							duration,
+						}),
+					);
+				}
 				break;
 			}
 
