@@ -121,8 +121,10 @@
 			</div>
 			<button onclick="terminateWebWorker()">Stop WebWorker</button>
 		</main>
-		<script>
+		<script type="module">
 			// TODO: get this to work if no server, in which case, load server.config.js :)
+			const { config } = await import('./server.config.js');
+			const { runServerSide } = config;
 
 			let ws;
 			const setServerDay = () => {
@@ -264,6 +266,16 @@
 			// Initiate worker
 			let worker;
 
+			const processResult = (result) => {
+				const { success, answers, duration } = result;
+				if (success) {
+					changeState(STATE.COMPLETE, duration);
+					updateAnswers(answers);
+				} else {
+					changeState(STATE.ERROR, duration);
+				}
+			};
+
 			const startWorker = () => {
 				if (worker) throw new Error('???');
 
@@ -272,13 +284,7 @@
 				});
 
 				worker.addEventListener('message', (e) => {
-					const { success, answers, duration } = e.data;
-					if (success) {
-						changeState(STATE.COMPLETE, duration);
-						updateAnswers(answers);
-					} else {
-						changeState(STATE.ERROR, duration);
-					}
+					processResult(e.data);
 				});
 			};
 
@@ -318,13 +324,24 @@
 
 				console.clear();
 
-				startWorker();
-				worker.postMessage({
+				const msg = {
 					year,
 					day: dayId,
 					input,
 					fileName,
-				});
+				};
+
+				if (runServerSide) {
+					ws.send(
+						JSON.stringify({
+							event: 'execute',
+							...msg,
+						}),
+					);
+				} else {
+					startWorker();
+					worker.postMessage(msg);
+				}
 			};
 
 			const updateDescription = (description) => {
@@ -367,6 +384,11 @@
 							const { blocks } = data;
 
 							updateDescription(data.description);
+							break;
+						}
+						case 'answers': {
+							const { answers, duration } = data;
+							processResult(data);
 							break;
 						}
 						default:

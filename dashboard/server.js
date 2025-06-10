@@ -4,7 +4,7 @@ import launch from 'launch-editor';
 import { WebSocketServer } from 'ws';
 import { config } from './server.config.js';
 
-const { cacheDir, getFileName, getTemplateFileName } = config;
+const { cacheDir, getFileName, getTemplateFileName, runServerSide } = config;
 
 const { SESSION_COOKIE } = process.env;
 
@@ -115,13 +115,17 @@ const listenToFile = async (ws, fileName, year) => {
 		if (!fileName) return;
 
 		if (timeout) return;
-
 		timeout = setTimeout(() => {
 			timeout = undefined;
 		}, 100);
 
-		console.log('send file update');
-		ws.send(JSON.stringify({ event: 'file-update' }));
+		if (runServerSide) {
+			ws.send(JSON.stringify({ event: 'server-executing' }));
+			ws.send(JSON.stringify({ event: 'server-result' }));
+		} else {
+			console.log('send file update');
+			ws.send(JSON.stringify({ event: 'file-update' }));
+		}
 	});
 };
 
@@ -150,13 +154,10 @@ wss.on('connection', (ws) => {
 
 			case 'submit-answer': {
 				const description = await getDescription(year, day);
-				/<input type="hidden" name="level" value="(?<level>\d)">/;
+				const levelRegex =
+					/<input type="hidden" name="level" value="(?<level>\d)">/;
 
-				const level =
-					/<input type="hidden" name="level" value="(?<level>\d)"/.exec(
-						description,
-					)?.groups?.level;
-
+				const level = levelRegex.exec(description)?.groups?.level;
 				if (level === undefined) return;
 
 				const { answer } = data;
@@ -207,6 +208,26 @@ wss.on('connection', (ws) => {
 
 			case 'open-source': {
 				openEditor(getFileName(year, day));
+				break;
+			}
+
+			case 'execute': {
+				// TODO(bret): how do we execute it???
+				const { input } = data;
+				const fileName = '.' + getFileName(year, day);
+
+				const { solution } = await import(fileName);
+				const start = performance.now();
+				const answers = solution(input);
+				const duration = performance.now() - start;
+				ws.send(
+					JSON.stringify({
+						event: 'answers',
+						success: true,
+						answers,
+						duration,
+					}),
+				);
 				break;
 			}
 

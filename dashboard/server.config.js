@@ -1,5 +1,6 @@
 export const config = {
 	cacheDir: '.cache',
+	runServerSide: true,
 	getFileName: (year, day) => {
 		const day2 = day.toString().padStart(2, '0');
 		switch (year) {
