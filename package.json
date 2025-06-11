@@ -5,6 +5,7 @@
 	"main": "dashboard/server.js",
 	"type": "module",
 	"scripts": {
+		"preinstall": "npx only-allow pnpm",
 		"start": "node --env-file=.env dashboard/server.js",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
